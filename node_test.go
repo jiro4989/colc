@@ -26,6 +26,16 @@ func TestCalcHeadCombinator(t *testing.T) {
 			desc: "正常系",
 		},
 		TD{
+			inCLCode: []string{""},
+			inCombinator: Combinator{
+				Name:      "S",
+				ArgsCount: 3,
+				Format:    "{0}{2}({1}{2})",
+			},
+			out:  "",
+			desc: "空文字だけのときは空文字を返す",
+		},
+		TD{
 			inCLCode: []string{"x", "y"},
 			inCombinator: Combinator{
 				Name:      "S",
