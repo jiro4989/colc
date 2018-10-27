@@ -7,6 +7,68 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestCalcHeadCombinator(t *testing.T) {
+	type TD struct {
+		inCLCode     []string
+		inCombinator Combinator
+		out          string
+		desc         string
+	}
+	tds := []TD{
+		TD{
+			inCLCode: []string{"x", "y", "z"},
+			inCombinator: Combinator{
+				Name:      "S",
+				ArgsCount: 3,
+				Format:    "{0}{2}({1}{2})",
+			},
+			out:  "xz(yz)",
+			desc: "正常系",
+		},
+		TD{
+			inCLCode: []string{"x", "y"},
+			inCombinator: Combinator{
+				Name:      "S",
+				ArgsCount: 3,
+				Format:    "{0}{2}({1}{2})",
+			},
+			out:  "xy",
+			desc: "引数不足は処理せず結合して返す",
+		},
+		TD{
+			inCLCode: []string{},
+			inCombinator: Combinator{
+				Name:      "S",
+				ArgsCount: 3,
+				Format:    "{0}{2}({1}{2})",
+			},
+			out:  "",
+			desc: "引数が空のときは空文字列を返す",
+		},
+		TD{
+			inCLCode: nil,
+			inCombinator: Combinator{
+				Name:      "S",
+				ArgsCount: 3,
+				Format:    "{0}{2}({1}{2})",
+			},
+			out:  "",
+			desc: "引数がnilのときは空文字列を返す",
+		},
+		TD{
+			inCLCode:     []string{"x", "y"},
+			inCombinator: Combinator{},
+			out:          "",
+			desc:         "コンビネータが空のときはそのまま返す。",
+		},
+	}
+	for _, td := range tds {
+		expect, desc := td.out, td.desc
+		actual := CalcHeadCombinator(td.inCLCode, td.inCombinator)
+		assert.Equal(t, expect, actual, desc, td.inCLCode, td.inCombinator)
+	}
+}
+
 func TestParseCLCode(t *testing.T) {
 	type TD struct {
 		in     string

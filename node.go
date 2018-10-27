@@ -12,6 +12,27 @@ type Node struct {
 	Nodes []Node
 }
 
+type Combinator struct {
+	Name      string
+	ArgsCount int
+	Format    string
+}
+
+func CalcHeadCombinator(cs []string, co Combinator) string {
+	max := co.ArgsCount
+	if len(cs) < max {
+		return strings.Join(cs, "")
+	}
+
+	s := co.Format
+	for i := 0; i < max; i++ {
+		f := fmt.Sprintf("{%d}", i)
+		s = strings.Replace(s, f, cs[i], -1)
+	}
+
+	return s
+}
+
 // ParseCLCode はclcodeを解析してNode配列を返す。
 func ParseCLCode(clcode string, config ...Config) ([]Node, error) {
 	// 空白文字は無視するので削除
