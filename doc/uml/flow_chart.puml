@@ -1,0 +1,33 @@
+@startuml
+
+title SKI Combinator
+
+start
+
+: start application;
+
+: check arguments;
+if (args count < 2) then (true)
+  : wait standard input;
+  end
+endif
+
+: clcode = args[1];
+: tree = combinator.parse(clcode);
+note right
+  construct tree node
+end note
+if (failed parsing clcode) then (true)
+  : stderr error message;
+  : exit 1;
+  end
+endif
+: resultTree = tree.calcAll();
+
+: stdout resultTree;
+
+: end application;
+
+end
+
+@enduml

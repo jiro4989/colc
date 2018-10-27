@@ -1,0 +1,45 @@
+@startuml
+
+title func ParseNodes()
+
+start
+
+:nodes = [];
+:node = new Node();
+:top_chara = removeTopChara(clcode);
+
+repeat
+  note right
+    add nodes of first depth
+  end note
+  if (top_chara is defined_conbinator) then (true)
+    if (depthCount == 0) then (true)
+      :node.add(top_chara);
+      :nodes.add(node);
+      :node = new Node();
+    endif
+  else if (top_chara is () then (true)
+    :depthCount++;
+    :node.add(top_chara);
+  else if (top_chara is )) then (true)
+    :depthCount--;
+    :node.add(top_chara);
+    if (depthCount == 0) then (true)
+      :nodes.add(node);
+      :node = new Node();
+    endif
+  else
+    :node.add(top_chara);
+    if (depthCount == 0) then (true)
+      :nodes.add(node);
+      :node = new Node();
+    endif
+  endif
+  :top_chara = removeTopChara(clcode);
+repeat while (top_chara != "")
+
+:return nodes;
+
+end
+
+@enduml

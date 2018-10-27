@@ -1,0 +1,5 @@
+[
+  { "combinatorName":"S", "argsCount":3, "format":"{0}{2}({1}{2})" },
+  { "combinatorName":"K", "argsCount":2, "format":"{0}" },
+  { "combinatorName":"I", "argsCount":1, "format":"{0}" }
+]
