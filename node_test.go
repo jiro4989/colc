@@ -37,6 +37,28 @@ func TestCalcCLCode(t *testing.T) {
 			expect: "xz(yz)",
 			desc:   "正常系",
 		},
+		TD{
+			clcode: "Sxyza",
+			cs: []Combinator{
+				Combinator{
+					Name:      "S",
+					ArgsCount: 3,
+					Format:    "{0}{2}({1}{2})",
+				},
+				Combinator{
+					Name:      "K",
+					ArgsCount: 2,
+					Format:    "{0}",
+				},
+				Combinator{
+					Name:      "I",
+					ArgsCount: 1,
+					Format:    "{0}",
+				},
+			},
+			expect: "xz(yz)a",
+			desc:   "計算結果は結合される",
+		},
 	}
 	for _, td := range tds {
 		clcode, cs, expect, desc := td.clcode, td.cs, td.expect, td.desc

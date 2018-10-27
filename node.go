@@ -50,7 +50,8 @@ func CalcCLCode(clcode string, cs []Combinator) string {
 			t = t[len(c):]
 		}
 
-		aft = CalcHeadCombinator(args, co)
+		res := CalcHeadCombinator(args, co)
+		aft = res
 	}
 	return aft
 }
