@@ -18,6 +18,43 @@ type Combinator struct {
 	Format    string
 }
 
+func CalcCLCode(clcode string, cs []Combinator) string {
+	// コンビネータリストから名前だけのコンビネータを生成
+	var cns []string
+	for _, c := range cs {
+		cns = append(cns, c.Name)
+	}
+
+	bef, aft := clcode, clcode
+	for {
+		if bef != aft {
+			break
+		}
+		bef = aft
+		pref := getPrefixCombinator(bef, cns)
+
+		// 先頭コンビネータが定義済みコンビネータの中にあればセット
+		var co Combinator
+		for _, c := range cs {
+			if c.Name == pref {
+				co = c
+				break
+			}
+		}
+
+		t := bef[len(pref):]
+		var args []string
+		for i := 0; i < co.ArgsCount; i++ {
+			c := getPrefixCombinator(t, cns)
+			args = append(args, c)
+			t = t[len(c):]
+		}
+
+		aft = CalcHeadCombinator(args, co)
+	}
+	return aft
+}
+
 func CalcHeadCombinator(cs []string, co Combinator) string {
 	max := co.ArgsCount
 	if len(cs) < max {
