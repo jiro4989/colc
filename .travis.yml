@@ -5,4 +5,4 @@ before_install:
 install:
   - $GOPATH/bin/dep ensure
 script:
-  - go test ./...
+  - make test
