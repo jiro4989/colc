@@ -1,5 +1,4 @@
 # comblo
-[![Build Status](https://travis-ci.org/jiro4989/comblo.svg?branch=master)](https://travis-ci.org/jiro4989/comblo)
 
 Combinator Logicをコマンドラインから使うためのツール
 
