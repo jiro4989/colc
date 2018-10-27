@@ -36,15 +36,6 @@ func init() {
 }
 
 func main() {
-	opts, args := parseOptions()
-	fmt.Println(opts, args) // DEBUG
-
-	config, _ := ReadConfig("config/combinator.json")
-	v, _ := ParseCLCode("Sxyz", config)
-	fmt.Println(v)
-
-	v, _ = ParseCLCode("S(SKI)", config)
-	fmt.Println(v)
 }
 
 // ReadConfig は指定パスのJSON設定ファイルを読み取る
