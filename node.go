@@ -5,12 +5,6 @@ import (
 	"strings"
 )
 
-// Node はコンビネータの名前と、その子ノードを持つ。
-type Node struct {
-	Name  string
-	Nodes []Node
-}
-
 type Combinator struct {
 	Name      string
 	ArgsCount int
