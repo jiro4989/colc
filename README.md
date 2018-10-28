@@ -30,23 +30,28 @@ I, 1, 0
 ## 使い方
 
 ```bash
-comblo 'Sxyz'
+echo "Sxyz" | colc
 # -> xz(yz)
 
-comblo -e 'Sxyz' -e 'Kxy'
-# -> xz(yz)
-# -> x
+colc clcode.txt
 
-comblo -f clcode.txt
+colc -f clcode1.txt -f clcode2.txt
 
 # ファイル出力
-comblo 'Sxyz' -o out.txt
+colc clcode.txt -o out.txt
 
 # JSON出力
-comblo 'Sxyz' -t json -o out.json
+colc clcode.txt -t json
+colc clcode.txt -t json -o out.json
 ```
 
 ## 開発
+### ヘルプ
+
+```bash
+make
+```
+
 ### バイナリの生成
 
 ```bash
