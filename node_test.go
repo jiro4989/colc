@@ -220,6 +220,12 @@ func TestGetPrefgixCombinator(t *testing.T) {
 			desc:          "括弧で括られた文字列はコンビネータである",
 		},
 		TD{
+			inCLCode:      "(ab(xzy))x",
+			inCombinators: []string{},
+			expect:        "(ab(xzy))",
+			desc:          "ネストした括弧もコンビネータである",
+		},
+		TD{
 			inCLCode:      "abc",
 			inCombinators: []string{"aAAAAAA"},
 			expect:        "a",
