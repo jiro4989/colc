@@ -17,6 +17,7 @@ type Combinator struct {
 	Format    string
 }
 
+// CalcCLCode は計算不可能になるまで計算した結果を返す。
 func CalcCLCode(clcode string, cs []Combinator) string {
 	// コンビネータリストから名前だけのコンビネータを生成
 	var cns []string
@@ -24,13 +25,14 @@ func CalcCLCode(clcode string, cs []Combinator) string {
 		cns = append(cns, c.Name)
 	}
 
-	bef, aft := clcode, clcode
+	// break判定用。計算前と後で一致していたらbreak
+	bef := clcode
+	pref := getPrefixCombinator(clcode, cns)
+	clcode = clcode[len(pref):]
 	for {
-		if bef != aft {
+		if pref == "" {
 			break
 		}
-		bef = aft
-		pref := getPrefixCombinator(bef, cns)
 
 		// 先頭コンビネータが定義済みコンビネータの中にあればセット
 		var co Combinator
@@ -41,18 +43,28 @@ func CalcCLCode(clcode string, cs []Combinator) string {
 			}
 		}
 
-		t := bef[len(pref):]
+		// 計算前のデータを保存。break判定用
+		bef = clcode
+
+		// 定義済みコンビネータが必要とする分コンビネータを取得
 		var args []string
 		for i := 0; i < co.ArgsCount; i++ {
-			c := getPrefixCombinator(t, cns)
+			c := getPrefixCombinator(clcode, cns)
 			args = append(args, c)
-			t = t[len(c):]
+			clcode = clcode[len(c):]
+		}
+		// 計算結果は先頭コンビネータ分だけなので、計算されなかった分のコンビネ
+		// ータと結合
+		clcode = CalcHeadCombinator(args, co) + clcode
+
+		// 計算前と後が同じ == 計算不可能な状態になったら終了
+		if bef == clcode {
+			break
 		}
 
-		res := CalcHeadCombinator(args, co)
-		aft = res
+		pref = getPrefixCombinator(clcode, cns)
 	}
-	return aft
+	return clcode
 }
 
 func CalcHeadCombinator(cs []string, co Combinator) string {
