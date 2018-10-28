@@ -1,14 +1,36 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 
 	flags "github.com/jessevdk/go-flags"
+	combinator "github.com/jiro4989/colc/combinator/v1"
 )
+
+var cs = []combinator.Combinator{
+	combinator.Combinator{
+		Name:      "S",
+		ArgsCount: 3,
+		Format:    "{0}{2}({1}{2})",
+	},
+	combinator.Combinator{
+		Name:      "K",
+		ArgsCount: 2,
+		Format:    "{0}",
+	},
+	combinator.Combinator{
+		Name:      "I",
+		ArgsCount: 1,
+		Format:    "{0}",
+	},
+}
 
 // options オプション引数
 type options struct {
@@ -36,6 +58,33 @@ func init() {
 }
 
 func main() {
+	// オプション引数の解析
+	_, args := parseOptions()
+	if len(args) < 1 {
+		ss, err := calc(os.Stdin)
+		if err != nil {
+			panic(err)
+		}
+		for _, s := range ss {
+			fmt.Println(s)
+		}
+	}
+}
+
+func calc(r io.Reader) ([]string, error) {
+	var res []string
+	// 入力をfloatに変換して都度計算
+	sc := bufio.NewScanner(r)
+	for sc.Scan() {
+		line := sc.Text()
+		line = strings.Trim(line, " ")
+		s := combinator.CalcCLCode(line, cs)
+		res = append(res, s)
+	}
+	if err := sc.Err(); err != nil {
+		return nil, err
+	}
+	return res, nil
 }
 
 // ReadConfig は指定パスのJSON設定ファイルを読み取る
