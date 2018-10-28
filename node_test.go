@@ -7,24 +7,25 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var cs = []Combinator{
+	Combinator{
+		Name:      "S",
+		ArgsCount: 3,
+		Format:    "{0}{2}({1}{2})",
+	},
+	Combinator{
+		Name:      "K",
+		ArgsCount: 2,
+		Format:    "{0}",
+	},
+	Combinator{
+		Name:      "I",
+		ArgsCount: 1,
+		Format:    "{0}",
+	},
+}
+
 func TestGetCombinatorArgs(t *testing.T) {
-	cs := []Combinator{
-		Combinator{
-			Name:      "S",
-			ArgsCount: 3,
-			Format:    "{0}{2}({1}{2})",
-		},
-		Combinator{
-			Name:      "K",
-			ArgsCount: 2,
-			Format:    "{0}",
-		},
-		Combinator{
-			Name:      "I",
-			ArgsCount: 1,
-			Format:    "{0}",
-		},
-	}
 	type TD struct {
 		clcode string
 		cs     []Combinator
@@ -62,45 +63,13 @@ func TestCalcCLCode(t *testing.T) {
 	tds := []TD{
 		TD{
 			clcode: "Sxyz",
-			cs: []Combinator{
-				Combinator{
-					Name:      "S",
-					ArgsCount: 3,
-					Format:    "{0}{2}({1}{2})",
-				},
-				Combinator{
-					Name:      "K",
-					ArgsCount: 2,
-					Format:    "{0}",
-				},
-				Combinator{
-					Name:      "I",
-					ArgsCount: 1,
-					Format:    "{0}",
-				},
-			},
+			cs:     cs,
 			expect: "xz(yz)",
 			desc:   "正常系",
 		},
 		TD{
 			clcode: "Sxyza",
-			cs: []Combinator{
-				Combinator{
-					Name:      "S",
-					ArgsCount: 3,
-					Format:    "{0}{2}({1}{2})",
-				},
-				Combinator{
-					Name:      "K",
-					ArgsCount: 2,
-					Format:    "{0}",
-				},
-				Combinator{
-					Name:      "I",
-					ArgsCount: 1,
-					Format:    "{0}",
-				},
-			},
+			cs:     cs,
 			expect: "xz(yz)a",
 			desc:   "計算結果は結合される",
 		},
@@ -113,6 +82,11 @@ func TestCalcCLCode(t *testing.T) {
 }
 
 func TestCalcHeadCombinator(t *testing.T) {
+	s := Combinator{
+		Name:      "S",
+		ArgsCount: 3,
+		Format:    "{0}{2}({1}{2})",
+	}
 	type TD struct {
 		inCLCode     []string
 		inCombinator Combinator
@@ -121,54 +95,34 @@ func TestCalcHeadCombinator(t *testing.T) {
 	}
 	tds := []TD{
 		TD{
-			inCLCode: []string{"x", "y", "z"},
-			inCombinator: Combinator{
-				Name:      "S",
-				ArgsCount: 3,
-				Format:    "{0}{2}({1}{2})",
-			},
-			out:  "xz(yz)",
-			desc: "正常系",
+			inCLCode:     []string{"x", "y", "z"},
+			inCombinator: s,
+			out:          "xz(yz)",
+			desc:         "正常系",
 		},
 		TD{
-			inCLCode: []string{""},
-			inCombinator: Combinator{
-				Name:      "S",
-				ArgsCount: 3,
-				Format:    "{0}{2}({1}{2})",
-			},
-			out:  "",
-			desc: "空文字だけのときは空文字を返す",
+			inCLCode:     []string{""},
+			inCombinator: s,
+			out:          "",
+			desc:         "空文字だけのときは空文字を返す",
 		},
 		TD{
-			inCLCode: []string{"x", "y"},
-			inCombinator: Combinator{
-				Name:      "S",
-				ArgsCount: 3,
-				Format:    "{0}{2}({1}{2})",
-			},
-			out:  "xy",
-			desc: "引数不足は処理せず結合して返す",
+			inCLCode:     []string{"x", "y"},
+			inCombinator: s,
+			out:          "xy",
+			desc:         "引数不足は処理せず結合して返す",
 		},
 		TD{
-			inCLCode: []string{},
-			inCombinator: Combinator{
-				Name:      "S",
-				ArgsCount: 3,
-				Format:    "{0}{2}({1}{2})",
-			},
-			out:  "",
-			desc: "引数が空のときは空文字列を返す",
+			inCLCode:     []string{},
+			inCombinator: s,
+			out:          "",
+			desc:         "引数が空のときは空文字列を返す",
 		},
 		TD{
-			inCLCode: nil,
-			inCombinator: Combinator{
-				Name:      "S",
-				ArgsCount: 3,
-				Format:    "{0}{2}({1}{2})",
-			},
-			out:  "",
-			desc: "引数がnilのときは空文字列を返す",
+			inCLCode:     nil,
+			inCombinator: s,
+			out:          "",
+			desc:         "引数がnilのときは空文字列を返す",
 		},
 		TD{
 			inCLCode:     []string{"x", "y"},
