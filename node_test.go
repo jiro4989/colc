@@ -238,7 +238,7 @@ func TestGetPrefgixCombinator(t *testing.T) {
 	}
 	for _, td := range tds {
 		clcode, comb, desc, expect := td.inCLCode, td.inCombinators, td.desc, td.expect
-		actual := getPrefixCombinator(clcode, comb)
+		actual := GetPrefixCombinator(clcode, comb)
 		assert.Equal(t, expect, actual, desc, fmt.Sprintf("in:{clcode:%v,comb:%v}", clcode, comb))
 	}
 }
