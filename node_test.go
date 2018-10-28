@@ -95,7 +95,30 @@ func TestCalcCLCode(t *testing.T) {
 			clcode: "Sxyz",
 			cs:     cs,
 			expect: "xz(yz)",
-			desc:   "正常系",
+			desc:   "一度だけ計算する",
+		},
+		TD{
+			clcode: "SKII",
+			cs:     cs,
+			expect: "I",
+			desc:   "最後まで計算する",
+		},
+		TD{
+			clcode: "ZKxyz",
+			cs: []Combinator{
+				Combinator{
+					Name:      "Z",
+					ArgsCount: 1,
+					Format:    "({0})",
+				},
+				Combinator{
+					Name:      "K",
+					ArgsCount: 2,
+					Format:    "{0}",
+				},
+			},
+			expect: "xz",
+			desc:   "計算結果の関係で先頭に括弧で括られたコンビネータが来ても計算する",
 		},
 		TD{
 			clcode: "Sxyza",

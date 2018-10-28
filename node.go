@@ -26,10 +26,15 @@ func CalcCLCode(clcode string, cs []Combinator) string {
 	}
 
 	// break判定用。計算前と後で一致していたらbreak
+	var pref string
 	bef := clcode
-	pref := getPrefixCombinator(clcode, cns)
-	clcode = clcode[len(pref):]
 	for {
+		pref = getPrefixCombinator(clcode, cns)
+		clcode = clcode[len(pref):]
+		// コンビネータが括弧で括られていたら、括弧を除去
+		if strings.HasPrefix(pref, "(") {
+			pref = pref[1 : len(pref)-1]
+		}
 		if pref == "" {
 			break
 		}
@@ -61,10 +66,8 @@ func CalcCLCode(clcode string, cs []Combinator) string {
 		if bef == clcode {
 			break
 		}
-
-		pref = getPrefixCombinator(clcode, cns)
 	}
-	return clcode
+	return pref + clcode
 }
 
 func CalcHeadCombinator(cs []string, co Combinator) string {
