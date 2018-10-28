@@ -1,5 +1,5 @@
-# comblo
-[![Build Status](https://travis-ci.org/jiro4989/clt.svg?branch=master)](https://travis-ci.org/jiro4989/clt)
+# colc (COmbinator Logic Calculator)
+[![Build Status](https://travis-ci.org/jiro4989/colc.svg?branch=master)](https://travis-ci.org/jiro4989/colc)
 
 Combinator Logicをコマンドラインから使うためのツール
 
