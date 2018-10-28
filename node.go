@@ -105,17 +105,17 @@ func getPrefixCombinator(clcode string, cs []string) string {
 		return ""
 	}
 
+	for _, c := range cs {
+		if strings.HasPrefix(clcode, c) {
+			return c
+		}
+	}
+
 	var (
 		ret   string
 		pref  = clcode[:1] // 先頭の文字
 		depth int          // 括弧のネストの深さ
 	)
-
-	for _, c := range cs {
-		if pref == c {
-			return c
-		}
-	}
 
 	if pref == "(" {
 		for {
