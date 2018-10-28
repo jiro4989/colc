@@ -8,6 +8,23 @@ import (
 )
 
 func TestGetCombinatorArgs(t *testing.T) {
+	cs := []Combinator{
+		Combinator{
+			Name:      "S",
+			ArgsCount: 3,
+			Format:    "{0}{2}({1}{2})",
+		},
+		Combinator{
+			Name:      "K",
+			ArgsCount: 2,
+			Format:    "{0}",
+		},
+		Combinator{
+			Name:      "I",
+			ArgsCount: 1,
+			Format:    "{0}",
+		},
+	}
 	type TD struct {
 		clcode string
 		cs     []Combinator
@@ -17,45 +34,13 @@ func TestGetCombinatorArgs(t *testing.T) {
 	tds := []TD{
 		TD{
 			clcode: "Sxyz",
-			cs: []Combinator{
-				Combinator{
-					Name:      "S",
-					ArgsCount: 3,
-					Format:    "{0}{2}({1}{2})",
-				},
-				Combinator{
-					Name:      "K",
-					ArgsCount: 2,
-					Format:    "{0}",
-				},
-				Combinator{
-					Name:      "I",
-					ArgsCount: 1,
-					Format:    "{0}",
-				},
-			},
+			cs:     cs,
 			expect: []string{"x", "y", "z"},
 			desc:   "正常系",
 		},
 		TD{
 			clcode: "S(abc)(ab)(c)",
-			cs: []Combinator{
-				Combinator{
-					Name:      "S",
-					ArgsCount: 3,
-					Format:    "{0}{2}({1}{2})",
-				},
-				Combinator{
-					Name:      "K",
-					ArgsCount: 2,
-					Format:    "{0}",
-				},
-				Combinator{
-					Name:      "I",
-					ArgsCount: 1,
-					Format:    "{0}",
-				},
-			},
+			cs:     cs,
 			expect: []string{"(abc)", "(ab)", "(c)"},
 			desc:   "括弧で括られた文字列は1コンビネータ",
 		},
