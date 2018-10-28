@@ -56,7 +56,7 @@ func TestGetCombinatorArgs(t *testing.T) {
 					Format:    "{0}",
 				},
 			},
-			expect: []string{"(abc)(ab)(c)"},
+			expect: []string{"(abc)", "(ab)", "(c)"},
 			desc:   "括弧で括られた文字列は1コンビネータ",
 		},
 	}
@@ -224,6 +224,12 @@ func TestGetPrefgixCombinator(t *testing.T) {
 			inCombinators: []string{},
 			expect:        "(ab(xzy))",
 			desc:          "ネストした括弧もコンビネータである",
+		},
+		TD{
+			inCLCode:      "(abc)(xyz)",
+			inCombinators: []string{},
+			expect:        "(abc)",
+			desc:          "括弧が連続しても別のコンビネータ",
 		},
 		TD{
 			inCLCode:      "abc",

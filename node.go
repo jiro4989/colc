@@ -117,6 +117,7 @@ func getPrefixCombinator(clcode string, cs []string) string {
 		return ""
 	}
 
+	// 先頭のが定義済みコンビネータだったら返却
 	for _, c := range cs {
 		if strings.HasPrefix(clcode, c) {
 			return c
@@ -150,12 +151,13 @@ func getPrefixCombinator(clcode string, cs []string) string {
 				depth--
 				goto endfor
 			}
-			if depth == 0 {
-				return ret
-			}
 		endfor:
 			ret += pref
 			clcode = clcode[1:]
+
+			if depth == 0 {
+				return ret
+			}
 		}
 	}
 
