@@ -91,18 +91,31 @@ func GetCombinatorArgs(clcode string, cs []Combinator) []string {
 	pref := getPrefixCombinator(clcode, cns)
 
 	// 先頭コンビネータが定義済みコンビネータの中にあればセット
-	var co Combinator
+	var (
+		co    Combinator
+		found bool
+	)
 	for _, c := range cs {
 		if c.Name == pref {
 			co = c
+			found = true
 			break
 		}
+	}
+
+	// マッチするコンビネータがない場合は空配列を返す
+	if !found {
+		return []string{}
 	}
 
 	clcode = clcode[len(co.Name):]
 	var args []string
 	for i := 0; i < co.ArgsCount; i++ {
 		c := getPrefixCombinator(clcode, cns)
+		// 引数よりも見つかったコンビネータ数が少ないときは終了
+		if c == "" {
+			return []string{}
+		}
 		args = append(args, c)
 		clcode = clcode[len(c):]
 	}

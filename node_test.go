@@ -45,6 +45,36 @@ func TestGetCombinatorArgs(t *testing.T) {
 			expect: []string{"(abc)", "(ab)", "(c)"},
 			desc:   "括弧で括られた文字列は1コンビネータ",
 		},
+		TD{
+			clcode: "S(abc)(ab)",
+			cs:     cs,
+			expect: []string{},
+			desc:   "引数が不足しているときは空配列を返す",
+		},
+		TD{
+			clcode: "",
+			cs:     cs,
+			expect: []string{},
+			desc:   "何も渡されないときは空配列を返す",
+		},
+		TD{
+			clcode: "Sxyz",
+			cs:     []Combinator{},
+			expect: []string{},
+			desc:   "定義済みコンビネータがない時は何も返さない",
+		},
+		TD{
+			clcode: "Ixyz",
+			cs:     cs,
+			expect: []string{"x"},
+			desc:   "Iコンビネータ",
+		},
+		TD{
+			clcode: "Zxyz",
+			cs:     cs,
+			expect: []string{},
+			desc:   "マッチするコンビネータがない場合は空配列を返す",
+		},
 	}
 	for _, td := range tds {
 		clcode, cs, expect, desc := td.clcode, td.cs, td.expect, td.desc
