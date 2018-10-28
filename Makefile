@@ -12,7 +12,8 @@ EXTERNAL_TOOLS := \
 	github.com/golang/dep/cmd/dep \
 	github.com/mitchellh/gox \
 	github.com/tcnksm/ghr \
-	github.com/motemen/gobump/cmd/gobump
+	github.com/motemen/gobump/cmd/gobump \
+	github.com/alecthomas/gometalinter
 
 help: ## ドキュメントのヘルプを表示する。
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -46,6 +47,7 @@ release: bootstrap test archive ## GitHubにリリースする
 
 .PHONY: test
 test: ## テストコードを実行する
+	-gometalinter
 	go test -cover ./...
 
 .PHONY: clean
@@ -63,6 +65,7 @@ bootstrap: ## 外部ツールをインストールする
 		echo "Installing $$t ..." ; \
 		go get $$t ; \
 	done
+	gometalinter --install --update
 
 graph: ## グラフ画像を生成する
 	docker build ./graphviz -t graphviz

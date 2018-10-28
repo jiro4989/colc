@@ -1,8 +1,6 @@
 language: go
 
-before_install:
-  - go get github.com/golang/dep/...
 install:
-  - $GOPATH/bin/dep ensure
+  - make deps
 script:
   - make test
