@@ -1,7 +1,6 @@
 package combinator
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -239,6 +238,6 @@ func TestGetPrefgixCombinator(t *testing.T) {
 	for _, td := range tds {
 		clcode, comb, desc, expect := td.inCLCode, td.inCombinators, td.desc, td.expect
 		actual := GetPrefixCombinator(clcode, comb)
-		assert.Equal(t, expect, actual, desc, fmt.Sprintf("in:{clcode:%v,comb:%v}", clcode, comb))
+		assert.Equal(t, expect, actual, desc, clcode, comb)
 	}
 }
