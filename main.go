@@ -34,11 +34,10 @@ var cs = []combinator.Combinator{
 
 // options オプション引数
 type options struct {
-	Version     func()   `short:"v" long:"version" description:"バージョン情報"`
-	CLCode      []string `short:"c" long:"clcode" description:"計算対象のCLCode"`
-	InFile      string   `short:"f" long:"infile" description:"計算対象の書かれたテキストファイル"`
-	OutFile     string   `short:"o" long:"outfile" description:"出力ファイルパス"`
-	OutFileType string   `short:"t" long:"outfiletype" description:"出力ファイルの種類(なし|json)"`
+	Version     func() `short:"v" long:"version" description:"バージョン情報"`
+	StepCount   int    `short:"s" long:"stepcount" description:"何ステップまで計算するか"`
+	OutFile     string `short:"o" long:"outfile" description:"出力ファイルパス"`
+	OutFileType string `short:"t" long:"outfiletype" description:"出力ファイルの種類(なし|json)"`
 }
 
 // コンビネータ設定
