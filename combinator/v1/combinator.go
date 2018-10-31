@@ -11,57 +11,47 @@ type Combinator struct {
 	Format    string
 }
 
+func TrimBracket(s string) string {
+	if strings.HasPrefix(s, "(") && strings.HasSuffix(s, ")") {
+		return TrimBracket(s[1 : len(s)-1])
+	}
+	return s
+}
+
 // CalcCLCode は計算不可能になるまで計算した結果を返す。
 func CalcCLCode(clcode string, cs []Combinator) string {
-	// コンビネータリストから名前だけのコンビネータを生成
-	var cns []string
+	ret := CalcHead(clcode, cs)
+	if ret == clcode {
+		return ret
+	}
+	return CalcCLCode(ret, cs)
+}
+
+// 先頭のコンビネータを計算する。括弧があっても展開して1回計算する。
+func CalcHead(clcode string, cs []Combinator) string {
+	pref, args, suff := SplitCombinatorArgsAndSuffix(clcode, cs)
+
+	// 括弧が出現したときは括弧を展開して計算
+	if strings.HasPrefix(pref, "(") && strings.HasSuffix(pref, ")") {
+		suff := clcode[len(pref):]
+		pref = TrimBracket(pref)
+		return CalcHead(pref+suff, cs)
+	}
+
+	// 先頭コンビネータが定義済みコンビネータの中にあればセット
+	var co Combinator
+	var found = false
 	for _, c := range cs {
-		cns = append(cns, c.Name)
-	}
-
-	// break判定用。計算前と後で一致していたらbreak
-	var pref string
-	bef := clcode
-	for {
-		pref = GetPrefixCombinator(clcode, cns)
-		clcode = clcode[len(pref):]
-		// コンビネータが括弧で括られていたら、括弧を除去
-		if strings.HasPrefix(pref, "(") {
-			pref = pref[1 : len(pref)-1]
-		}
-		if pref == "" {
-			break
-		}
-
-		// 先頭コンビネータが定義済みコンビネータの中にあればセット
-		var co Combinator
-		for _, c := range cs {
-			if c.Name == pref {
-				co = c
-				break
-			}
-		}
-
-		// 計算前のデータを保存。break判定用
-		bef = clcode
-
-		// 定義済みコンビネータが必要とする分コンビネータを取得
-		var args []string
-		for i := 0; i < co.ArgsCount; i++ {
-			c := GetPrefixCombinator(clcode, cns)
-			args = append(args, c)
-			clcode = clcode[len(c):]
-		}
-		// 計算結果は先頭コンビネータ分だけなので、計算されなかった分のコンビネ
-		// ータと結合
-		clcode = CalcHeadCombinator(args, co) + clcode
-
-		// 計算前と後が同じ == 計算不可能な状態になったら終了
-		if bef == clcode {
+		if c.Name == pref {
+			co = c
+			found = true
 			break
 		}
 	}
-	return pref + clcode
+	if !found || len(args) != co.ArgsCount {
+		return clcode
+	}
+	return CalcHeadCombinator(args, co) + suff
 }
 
 func CalcHeadCombinator(cs []string, co Combinator) string {
@@ -79,13 +69,15 @@ func CalcHeadCombinator(cs []string, co Combinator) string {
 	return s
 }
 
-func GetCombinatorArgs(clcode string, cs []Combinator) []string {
-	var cns []string
-	for _, c := range cs {
-		cns = append(cns, c.Name)
-	}
+func SplitCombinatorArgsAndSuffix(clcode string, cs []Combinator) (string, []string, string) {
+	pref := GetPrefixCombinator(clcode, cs)
+	args := GetCombinatorArgs(clcode, cs)
+	suff := clcode[len(pref+strings.Join(args, "")):]
+	return pref, args, suff
+}
 
-	pref := GetPrefixCombinator(clcode, cns)
+func GetCombinatorArgs(clcode string, cs []Combinator) []string {
+	pref := GetPrefixCombinator(clcode, cs)
 
 	// 先頭コンビネータが定義済みコンビネータの中にあればセット
 	var (
@@ -108,7 +100,7 @@ func GetCombinatorArgs(clcode string, cs []Combinator) []string {
 	clcode = clcode[len(co.Name):]
 	var args []string
 	for i := 0; i < co.ArgsCount; i++ {
-		c := GetPrefixCombinator(clcode, cns)
+		c := GetPrefixCombinator(clcode, cs)
 		// 引数よりも見つかったコンビネータ数が少ないときは終了
 		if c == "" {
 			return []string{}
@@ -122,15 +114,16 @@ func GetCombinatorArgs(clcode string, cs []Combinator) []string {
 
 // GetPrefixCombinator はCLCodeの先頭のコンビネータを返す。
 // 引数に渡している定義済みコンビネータが存在した場合、複数文字でも返す。
-func GetPrefixCombinator(clcode string, cs []string) string {
+func GetPrefixCombinator(clcode string, cs []Combinator) string {
 	if len(clcode) < 1 {
 		return ""
 	}
 
 	// 先頭のが定義済みコンビネータだったら返却
 	for _, c := range cs {
-		if strings.HasPrefix(clcode, c) {
-			return c
+		nm := c.Name
+		if strings.HasPrefix(clcode, nm) {
+			return nm
 		}
 	}
 

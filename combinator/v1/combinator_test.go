@@ -82,6 +82,16 @@ func TestGetCombinatorArgs(t *testing.T) {
 	}
 }
 
+func TestTrimBracket(t *testing.T) {
+	assert.Equal(t, "S", TrimBracket("(S)"), "1つ括弧を外す")
+	assert.Equal(t, "S", TrimBracket("((((S))))"), "ネストした括弧を外す")
+	assert.Equal(t, "(S)S", TrimBracket("((((S)S)))"), "ネストした括弧を外す")
+	assert.Equal(t, "S(S)S", TrimBracket("(((S(S)S)))"), "ネストした括弧を外す")
+	assert.Equal(t, "", TrimBracket(""), "空のときは空を返す")
+	assert.Equal(t, "(S", TrimBracket("(S"), "括弧不正のときはそのまま返す")
+	assert.Equal(t, "S)", TrimBracket("S)"), "括弧不正のときはそのまま返す")
+}
+
 func TestCalcCLCode(t *testing.T) {
 	type TD struct {
 		clcode string
@@ -101,6 +111,18 @@ func TestCalcCLCode(t *testing.T) {
 			cs:     cs,
 			expect: "I",
 			desc:   "最後まで計算する",
+		},
+		TD{
+			clcode: "SSSSS",
+			cs:     cs,
+			expect: "SS((SS)S)",
+			desc:   "多段ネストの計算をする",
+		},
+		TD{
+			clcode: "((((SSSSS))))",
+			cs:     cs,
+			expect: "SS((SS)S)",
+			desc:   "多段ネストの計算をする",
 		},
 		TD{
 			clcode: "ZKxyz",
@@ -131,6 +153,36 @@ func TestCalcCLCode(t *testing.T) {
 		actual := CalcCLCode(clcode, cs)
 		assert.Equal(t, expect, actual, desc, clcode, cs)
 	}
+}
+
+func TestCalc(t *testing.T) {
+	assert.Equal(t, "xz(yz)", CalcHead("Sxyz", cs))
+	assert.Equal(t, "xz(yz)!", CalcHead("Sxyz!", cs))
+	assert.Equal(t, "xz(yz)", CalcHead("(S)xyz", cs))
+	assert.Equal(t, "xz(yz)xyz", CalcHead("(Sxyz)xyz", cs))
+	assert.Equal(t, "Sxy", CalcHead("Sxy", cs))
+	assert.Equal(t, "S", CalcHead("S", cs))
+	assert.Equal(t, "", CalcHead("", cs))
+	assert.Equal(t, "Sxyz", CalcHead("Sxyz", []Combinator{}))
+}
+
+func TestSplitSuff(t *testing.T) {
+	var (
+		pref string
+		args []string
+		suff string
+	)
+
+	pref, args, suff = SplitCombinatorArgsAndSuffix("Sxyz", cs)
+	assert.Equal(t, "S", pref)
+	assert.Equal(t, []string{"x", "y", "z"}, args)
+	assert.Equal(t, "", suff)
+
+	pref, args, suff = SplitCombinatorArgsAndSuffix("Sxyz!", cs)
+	assert.Equal(t, "S", pref)
+	assert.Equal(t, []string{"x", "y", "z"}, args)
+	assert.Equal(t, "!", suff)
+
 }
 
 func TestCalcHeadCombinator(t *testing.T) {
@@ -193,44 +245,44 @@ func TestCalcHeadCombinator(t *testing.T) {
 func TestGetPrefgixCombinator(t *testing.T) {
 	type TD struct {
 		inCLCode      string
-		inCombinators []string
+		inCombinators []Combinator
 		expect        string
 		desc          string
 	}
 	tds := []TD{
 		TD{
 			inCLCode:      "Sabc",
-			inCombinators: []string{"S", "K", "I"},
+			inCombinators: cs,
 			expect:        "S",
 			desc:          "正常系",
 		},
 		TD{
 			inCLCode:      "(abc)x",
-			inCombinators: []string{},
+			inCombinators: []Combinator{},
 			expect:        "(abc)",
 			desc:          "括弧で括られた文字列はコンビネータである",
 		},
 		TD{
 			inCLCode:      "(ab(xzy))x",
-			inCombinators: []string{},
+			inCombinators: []Combinator{},
 			expect:        "(ab(xzy))",
 			desc:          "ネストした括弧もコンビネータである",
 		},
 		TD{
 			inCLCode:      "(abc)(xyz)",
-			inCombinators: []string{},
+			inCombinators: []Combinator{},
 			expect:        "(abc)",
 			desc:          "括弧が連続しても別のコンビネータ",
 		},
 		TD{
 			inCLCode:      "abc",
-			inCombinators: []string{"aAAAAAA"},
+			inCombinators: []Combinator{Combinator{Name: "aAAAAAA"}},
 			expect:        "a",
 			desc:          "コンビネータにマッチしない",
 		},
 		TD{
 			inCLCode:      "Sabc",
-			inCombinators: []string{"Sabc"},
+			inCombinators: []Combinator{Combinator{Name: "Sabc"}},
 			expect:        "Sabc",
 			desc:          "複数文字コンビネータ",
 		},
