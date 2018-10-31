@@ -1,0 +1,75 @@
+digraph graph_name {
+  graph [
+    charset = "UTF-8";
+    label = "Mix Combinator",
+    labelloc = "t",
+    labeljust = "c",
+    bgcolor = "#343434",
+    fontcolor = white,
+    fontsize = 18,
+    style = "filled",
+    rankdir = TB,
+    margin = 0.2,
+    splines = spline,
+    ranksep = 1.0,
+    nodesep = 0.9
+  ];
+
+  node [
+    colorscheme = "rdylgn11"
+    style = "solid,filled",
+    fontsize = 16,
+    fontcolor = 6,
+    fontname = "Migu 1M",
+    color = 7,
+    fillcolor = 11,
+    fixedsize = true,
+    height = 0.6,
+    width = 1.2
+  ];
+
+  edge [
+    style = solid,
+    fontsize = 14,
+    fontcolor = white,
+    fontname = "Migu 1M",
+    color = white,
+    labelfloat = true,
+    labeldistance = 2.5,
+    labelangle = 70
+  ];
+
+  S1[label = "S"]
+  K1[label = "K"]
+  I1[label = "I"]
+  x1[label = "x"]
+
+  // edge define
+  SKIx -> S1
+  SKIx -> K1
+  SKIx -> I1
+  SKIx -> x1
+
+  KxIx[label = "Kx(Ix)"]
+
+  S1 -> KxIx
+  K1 -> KxIx
+  I1 -> KxIx
+  x1 -> KxIx
+
+  K2[label = "K"]
+  x2[label = "x"]
+  Ix2[label = "(Ix)"]
+
+  KxIx -> K2
+  KxIx -> x2
+  KxIx -> Ix2
+
+  x4[label = "x"]
+
+  K2 -> x4
+  x2 -> x4
+  Ix2 -> x4
+}
+
+

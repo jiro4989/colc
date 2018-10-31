@@ -1,5 +1,5 @@
-# comblo
-[![Build Status](https://travis-ci.org/jiro4989/comblo.svg?branch=master)](https://travis-ci.org/jiro4989/comblo)
+# colc (COmbinator Logic Calculator)
+[![Build Status](https://travis-ci.org/jiro4989/colc.svg?branch=master)](https://travis-ci.org/jiro4989/colc)
 
 Combinator Logicをコマンドラインから使うためのツール
 
@@ -9,44 +9,101 @@ Combinator Logicをコマンドラインから使うためのツール
 チューリング完全であることが証明されているため、コンピュータで可能な計算は全てコ
 ンビネータだけで計算が可能である。
 
-以下にコンビネータ論理の主要な関数3つを定義。
+以下にコンビネータ論理の主要な関数3つの例を示す。
+
+### Sコンビネータ
+Sコンビネータは3つのコンビネータを引数に取り、以下のように並び替える。  
+※xyzはそれぞれ x y zという3つのコンビネータである。
 
 ```
-# Sabc -> ac(bc)
-S, 3, 02(12)
-
-# Kab
-I, 2, 0
-
-# Ia
-I, 1, 0
+Sxyz -> xz(yz)
 ```
 
-### コンビネータ
+以下の図のように、上記コンビネータはそれぞれ4つのコンビネータに分割され、3つの引
+数を計算に利用する。
+
 ![Sコンビネータとコンビネータの分割](doc/graphviz/s_combinator.png)
+
+### Kコンビネータ
+Kコンビネータは2つのコンビネータを引数に取り、1つ目のコンビネータを返す。
+
+```
+Kxy -> x
+```
+
+### Iコンビネータ
+Iコンビネータは1つのコンビネータを引数に取り、1つ目のコンビネータを返す。
+
+```
+Ix -> x
+```
+
+### コンビネータの処理の流れ
+コンビネータは計算不能になるまで計算結果を次の計算に利用する。
+前述のSKIコンビネータによる連続した計算の例を以下に示す。
 
 ![SKIの計算の流れ](doc/graphviz/mix_combinator.png)
 
-## 使い方
+上記の計算の例では、最終的に x というコンビネータに到達した。
+xというコンビネータは存在しないため、計算できずに計算を終了している。
+よって、 SKIx というコンビネータの計算結果は x である
+
+## colcコマンド
+colcコマンドは上記のような一連の計算をコマンドライン(以下CLI)上で行えるようにし
+たものである。
+
+### インストール方法
+[Go言語](https://golang.org/doc/install)をインストールし、以下のコマンドを実行する。
 
 ```bash
-comblo 'Sxyz'
-# -> xz(yz)
-
-comblo -e 'Sxyz' -e 'Kxy'
-# -> xz(yz)
-# -> x
-
-comblo -f clcode.txt
-
-# ファイル出力
-comblo 'Sxyz' -o out.txt
-
-# JSON出力
-comblo 'Sxyz' -t json -o out.json
+go get github.com/jiro4989/colc
 ```
 
+または、このGitHubのReleaseページのバイナリをダウンロードする。
+
+### 使い方
+
+```bash
+echo "Sxyz" | colc
+# -> xz(yz)
+
+colc clcode.txt
+```
+
+<!--
+```bash
+echo "Sxyz" | colc
+# -> xz(yz)
+
+colc clcode.txt
+
+colc -f clcode1.txt -f clcode2.txt
+
+# ファイル出力
+colc clcode.txt -o out.txt
+
+# JSON出力
+colc clcode.txt -t json
+colc clcode.txt -t json -o out.json
+```
+-->
+
+### 仕様
+
+1. 計算対象のテキストデータは行単位である。
+1. 引数(処理対象のテキストファイル)が未指定の場合、標準入力待ちとなる。
+1. 処理対象のテキストファイルは複数受け取れる。
+<!--
+1. 最後まで計算させたくない場合は、計算ステップ数を指定して実行できる。
+-->
+
 ## 開発
+### ヘルプ
+
+```bash
+make
+```
+
 ### バイナリの生成
 
 ```bash
