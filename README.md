@@ -68,6 +68,14 @@ echo "Sxyz" | colc
 # -> xz(yz)
 
 colc clcode.txt
+```
+
+<!--
+```bash
+echo "Sxyz" | colc
+# -> xz(yz)
+
+colc clcode.txt
 
 colc -f clcode1.txt -f clcode2.txt
 
@@ -78,13 +86,16 @@ colc clcode.txt -o out.txt
 colc clcode.txt -t json
 colc clcode.txt -t json -o out.json
 ```
+-->
 
 ### 仕様
 
 1. 計算対象のテキストデータは行単位である。
 1. 引数(処理対象のテキストファイル)が未指定の場合、標準入力待ちとなる。
 1. 処理対象のテキストファイルは複数受け取れる。
+<!--
 1. 最後まで計算させたくない場合は、計算ステップ数を指定して実行できる。
+-->
 
 ## 開発
 ### ヘルプ

@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -57,8 +58,9 @@ func init() {
 }
 
 func main() {
-	// オプション引数の解析
 	_, args := parseOptions()
+
+	// 引数指定なしの場合は標準入力を処理
 	if len(args) < 1 {
 		ss, err := calc(os.Stdin)
 		if err != nil {
@@ -67,7 +69,38 @@ func main() {
 		for _, s := range ss {
 			fmt.Println(s)
 		}
+		return
 	}
+	// 引数指定ありの場合はファイル処理
+	for _, fn := range args {
+		err := WithOpen(fn, func(r io.Reader) error {
+			ss, err := calc(r)
+			if err != nil {
+				return err
+			}
+			for _, s := range ss {
+				fmt.Println(s)
+			}
+			return nil
+		})
+		if err != nil {
+			panic(err)
+		}
+	}
+}
+
+// WithOpen はファイルを開き、関数を適用する。
+func WithOpen(fn string, f func(r io.Reader) error) error {
+	if f == nil {
+		return errors.New("適用する関数がnilでした。")
+	}
+
+	r, err := os.Open(fn)
+	if err != nil {
+		return err
+	}
+	defer r.Close()
+	return f(r)
 }
 
 func calc(r io.Reader) ([]string, error) {
