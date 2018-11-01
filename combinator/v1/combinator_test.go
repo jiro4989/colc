@@ -24,74 +24,6 @@ var cs = []Combinator{
 	},
 }
 
-func TestGetCombinatorArgs(t *testing.T) {
-	type TD struct {
-		clcode string
-		cs     []Combinator
-		expect []string
-		desc   string
-	}
-	tds := []TD{
-		TD{
-			clcode: "Sxyz",
-			cs:     cs,
-			expect: []string{"x", "y", "z"},
-			desc:   "正常系",
-		},
-		TD{
-			clcode: "S(abc)(ab)(c)",
-			cs:     cs,
-			expect: []string{"(abc)", "(ab)", "(c)"},
-			desc:   "括弧で括られた文字列は1コンビネータ",
-		},
-		TD{
-			clcode: "S(abc)(ab)",
-			cs:     cs,
-			expect: []string{},
-			desc:   "引数が不足しているときは空配列を返す",
-		},
-		TD{
-			clcode: "",
-			cs:     cs,
-			expect: []string{},
-			desc:   "何も渡されないときは空配列を返す",
-		},
-		TD{
-			clcode: "Sxyz",
-			cs:     []Combinator{},
-			expect: []string{},
-			desc:   "定義済みコンビネータがない時は何も返さない",
-		},
-		TD{
-			clcode: "Ixyz",
-			cs:     cs,
-			expect: []string{"x"},
-			desc:   "Iコンビネータ",
-		},
-		TD{
-			clcode: "Zxyz",
-			cs:     cs,
-			expect: []string{},
-			desc:   "マッチするコンビネータがない場合は空配列を返す",
-		},
-	}
-	for _, td := range tds {
-		clcode, cs, expect, desc := td.clcode, td.cs, td.expect, td.desc
-		actual := getCombinatorArgs(clcode, cs)
-		assert.Equal(t, expect, actual, desc, clcode, cs)
-	}
-}
-
-func TestTrimBracket(t *testing.T) {
-	assert.Equal(t, "S", trimBracket("(S)"), "1つ括弧を外す")
-	assert.Equal(t, "S", trimBracket("((((S))))"), "ネストした括弧を外す")
-	assert.Equal(t, "(S)S", trimBracket("((((S)S)))"), "ネストした括弧を外す")
-	assert.Equal(t, "S(S)S", trimBracket("(((S(S)S)))"), "ネストした括弧を外す")
-	assert.Equal(t, "", trimBracket(""), "空のときは空を返す")
-	assert.Equal(t, "(S", trimBracket("(S"), "括弧不正のときはそのまま返す")
-	assert.Equal(t, "S)", trimBracket("S)"), "括弧不正のときはそのまま返す")
-}
-
 func TestCalcCLCode(t *testing.T) {
 	type TD struct {
 		clcode string
@@ -166,23 +98,14 @@ func TestCalcCLCode1Time(t *testing.T) {
 	assert.Equal(t, "Sxyz", CalcCLCode1Time("Sxyz", []Combinator{}))
 }
 
-func TestSplitPrefixArgsSuffixCombinators(t *testing.T) {
-	var (
-		pref string
-		args []string
-		suff string
-	)
-
-	pref, args, suff = splitPrefixArgsSuffixCombinators("Sxyz", cs)
-	assert.Equal(t, "S", pref)
-	assert.Equal(t, []string{"x", "y", "z"}, args)
-	assert.Equal(t, "", suff)
-
-	pref, args, suff = splitPrefixArgsSuffixCombinators("Sxyz!", cs)
-	assert.Equal(t, "S", pref)
-	assert.Equal(t, []string{"x", "y", "z"}, args)
-	assert.Equal(t, "!", suff)
-
+func TestTrimBracket(t *testing.T) {
+	assert.Equal(t, "S", trimBracket("(S)"), "1つ括弧を外す")
+	assert.Equal(t, "S", trimBracket("((((S))))"), "ネストした括弧を外す")
+	assert.Equal(t, "(S)S", trimBracket("((((S)S)))"), "ネストした括弧を外す")
+	assert.Equal(t, "S(S)S", trimBracket("(((S(S)S)))"), "ネストした括弧を外す")
+	assert.Equal(t, "", trimBracket(""), "空のときは空を返す")
+	assert.Equal(t, "(S", trimBracket("(S"), "括弧不正のときはそのまま返す")
+	assert.Equal(t, "S)", trimBracket("S)"), "括弧不正のときはそのまま返す")
 }
 
 func TestCalcCombinatorArgs(t *testing.T) {
@@ -242,6 +165,25 @@ func TestCalcCombinatorArgs(t *testing.T) {
 	}
 }
 
+func TestSplitPrefixArgsSuffixCombinators(t *testing.T) {
+	var (
+		pref string
+		args []string
+		suff string
+	)
+
+	pref, args, suff = splitPrefixArgsSuffixCombinators("Sxyz", cs)
+	assert.Equal(t, "S", pref)
+	assert.Equal(t, []string{"x", "y", "z"}, args)
+	assert.Equal(t, "", suff)
+
+	pref, args, suff = splitPrefixArgsSuffixCombinators("Sxyz!", cs)
+	assert.Equal(t, "S", pref)
+	assert.Equal(t, []string{"x", "y", "z"}, args)
+	assert.Equal(t, "!", suff)
+
+}
+
 func TestGetPrefixCombinator(t *testing.T) {
 	type TD struct {
 		inCLCode      string
@@ -291,5 +233,62 @@ func TestGetPrefixCombinator(t *testing.T) {
 		clcode, comb, desc, expect := td.inCLCode, td.inCombinators, td.desc, td.expect
 		actual := getPrefixCombinator(clcode, comb)
 		assert.Equal(t, expect, actual, desc, clcode, comb)
+	}
+}
+func TestGetCombinatorArgs(t *testing.T) {
+	type TD struct {
+		clcode string
+		cs     []Combinator
+		expect []string
+		desc   string
+	}
+	tds := []TD{
+		TD{
+			clcode: "Sxyz",
+			cs:     cs,
+			expect: []string{"x", "y", "z"},
+			desc:   "正常系",
+		},
+		TD{
+			clcode: "S(abc)(ab)(c)",
+			cs:     cs,
+			expect: []string{"(abc)", "(ab)", "(c)"},
+			desc:   "括弧で括られた文字列は1コンビネータ",
+		},
+		TD{
+			clcode: "S(abc)(ab)",
+			cs:     cs,
+			expect: []string{},
+			desc:   "引数が不足しているときは空配列を返す",
+		},
+		TD{
+			clcode: "",
+			cs:     cs,
+			expect: []string{},
+			desc:   "何も渡されないときは空配列を返す",
+		},
+		TD{
+			clcode: "Sxyz",
+			cs:     []Combinator{},
+			expect: []string{},
+			desc:   "定義済みコンビネータがない時は何も返さない",
+		},
+		TD{
+			clcode: "Ixyz",
+			cs:     cs,
+			expect: []string{"x"},
+			desc:   "Iコンビネータ",
+		},
+		TD{
+			clcode: "Zxyz",
+			cs:     cs,
+			expect: []string{},
+			desc:   "マッチするコンビネータがない場合は空配列を返す",
+		},
+	}
+	for _, td := range tds {
+		clcode, cs, expect, desc := td.clcode, td.cs, td.expect, td.desc
+		actual := getCombinatorArgs(clcode, cs)
+		assert.Equal(t, expect, actual, desc, clcode, cs)
 	}
 }

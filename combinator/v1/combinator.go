@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// Combinator はコンビネータである。
 type Combinator struct {
 	Name      string
 	ArgsCount int
