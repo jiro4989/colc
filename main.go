@@ -36,7 +36,7 @@ var cs = []combinator.Combinator{
 // options オプション引数
 type options struct {
 	Version     func() `short:"v" long:"version" description:"バージョン情報"`
-	StepCount   int    `short:"s" long:"stepcount" description:"何ステップまで計算するか"`
+	StepCount   int    `short:"s" long:"stepcount" description:"何ステップまで計算するか" default:"-1"`
 	OutFile     string `short:"o" long:"outfile" description:"出力ファイルパス"`
 	OutFileType string `short:"t" long:"outfiletype" description:"出力ファイルの種類(なし|json)"`
 }
@@ -58,29 +58,25 @@ func init() {
 }
 
 func main() {
-	_, args := parseOptions()
+	opts, args := parseOptions()
 
 	// 引数指定なしの場合は標準入力を処理
 	if len(args) < 1 {
-		ss, err := calc(os.Stdin)
+		ss, err := calcCLCode(os.Stdin, opts)
 		if err != nil {
 			panic(err)
 		}
-		for _, s := range ss {
-			fmt.Println(s)
-		}
+		out(ss, opts)
 		return
 	}
 	// 引数指定ありの場合はファイル処理
 	for _, fn := range args {
 		err := WithOpen(fn, func(r io.Reader) error {
-			ss, err := calc(r)
+			ss, err := calcCLCode(r, opts)
 			if err != nil {
 				return err
 			}
-			for _, s := range ss {
-				fmt.Println(s)
-			}
+			out(ss, opts)
 			return nil
 		})
 		if err != nil {
@@ -103,20 +99,47 @@ func WithOpen(fn string, f func(r io.Reader) error) error {
 	return f(r)
 }
 
-func calc(r io.Reader) ([]string, error) {
+func calcCLCode(r io.Reader, opts options) ([]string, error) {
 	var res []string
 	// 入力をfloatに変換して都度計算
 	sc := bufio.NewScanner(r)
 	for sc.Scan() {
 		line := sc.Text()
 		line = strings.Trim(line, " ")
-		s := combinator.CalcCLCode(line, cs, -1)
+		s := combinator.CalcCLCode(line, cs, opts.StepCount)
 		res = append(res, s)
 	}
 	if err := sc.Err(); err != nil {
 		return nil, err
 	}
 	return res, nil
+}
+
+// out は行配列をオプションに応じて出力する。
+// 出力先ファイルが指定されていなければ標準出力する。
+// 指定があればファイル出力する。
+func out(lines []string, opts options) error {
+	if opts.OutFile == "" {
+		for _, v := range lines {
+			fmt.Println(v)
+		}
+		return nil
+	}
+
+	return WriteFile(opts.OutFile, lines)
+}
+
+func WriteFile(fn string, lines []string) error {
+	w, err := os.OpenFile(fn, os.O_RDWR|os.O_CREATE, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	defer w.Close()
+
+	for _, v := range lines {
+		fmt.Fprintln(w, v)
+	}
+	return nil
 }
 
 // ReadConfig は指定パスのJSON設定ファイルを読み取る
