@@ -49,6 +49,12 @@ func TestCalcCLCode(t *testing.T) {
 			s:    []string{"Sxyz", "SKII"},
 			desc: "正常系:計算しない",
 		},
+		TD{
+			r:    f("SSSSS"),
+			opts: o1,
+			s:    []string{"SS((SS)S)"},
+			desc: "正常系:計算しない",
+		},
 	}
 	for _, v := range tds {
 		r, opts, expect, desc := v.r, v.opts, v.s, v.desc
