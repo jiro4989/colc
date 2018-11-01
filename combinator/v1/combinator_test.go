@@ -28,6 +28,7 @@ func TestCalcCLCode(t *testing.T) {
 	type TD struct {
 		clcode string
 		cs     []Combinator
+		n      int
 		expect string
 		desc   string
 	}
@@ -35,24 +36,28 @@ func TestCalcCLCode(t *testing.T) {
 		TD{
 			clcode: "Sxyz",
 			cs:     cs,
+			n:      -1,
 			expect: "xz(yz)",
 			desc:   "一度だけ計算する",
 		},
 		TD{
 			clcode: "SKII",
 			cs:     cs,
+			n:      -1,
 			expect: "I",
 			desc:   "最後まで計算する",
 		},
 		TD{
 			clcode: "SSSSS",
 			cs:     cs,
+			n:      -1,
 			expect: "SS((SS)S)",
 			desc:   "多段ネストの計算をする",
 		},
 		TD{
 			clcode: "((((SSSSS))))",
 			cs:     cs,
+			n:      -1,
 			expect: "SS((SS)S)",
 			desc:   "多段ネストの計算をする",
 		},
@@ -70,20 +75,22 @@ func TestCalcCLCode(t *testing.T) {
 					Format:    "{0}",
 				},
 			},
+			n:      -1,
 			expect: "xz",
 			desc:   "計算結果の関係で先頭に括弧で括られたコンビネータが来ても計算する",
 		},
 		TD{
 			clcode: "Sxyza",
 			cs:     cs,
+			n:      -1,
 			expect: "xz(yz)a",
 			desc:   "計算結果は結合される",
 		},
 	}
 	for _, td := range tds {
-		clcode, cs, expect, desc := td.clcode, td.cs, td.expect, td.desc
-		actual := CalcCLCode(clcode, cs)
-		assert.Equal(t, expect, actual, desc, clcode, cs)
+		clcode, cs, n, expect, desc := td.clcode, td.cs, td.n, td.expect, td.desc
+		actual := CalcCLCode(clcode, cs, n)
+		assert.Equal(t, expect, actual, desc, clcode, cs, n)
 	}
 }
 

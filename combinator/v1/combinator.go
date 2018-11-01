@@ -13,12 +13,12 @@ type Combinator struct {
 }
 
 // CalcCLCode は計算不可能になるまで計算した結果を返す。
-func CalcCLCode(clcode string, cs []Combinator) string {
+func CalcCLCode(clcode string, cs []Combinator, n int) string {
 	ret := CalcCLCode1Time(clcode, cs)
 	if ret == clcode {
 		return ret
 	}
-	return CalcCLCode(ret, cs)
+	return CalcCLCode(ret, cs, n)
 }
 
 // CalcCLCode1Time は先頭のコンビネータを一度だけ計算する。
