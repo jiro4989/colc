@@ -53,7 +53,7 @@ func TestCalcCLCode(t *testing.T) {
 			r:    f("SSSSS"),
 			opts: o1,
 			s:    []string{"SS((SS)S)"},
-			desc: "正常系:計算しない",
+			desc: "正常系:ネスト括弧の計算をする",
 		},
 	}
 	for _, v := range tds {
