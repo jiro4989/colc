@@ -155,7 +155,7 @@ func TestCalcCLCode(t *testing.T) {
 	}
 }
 
-func TestCalc(t *testing.T) {
+func TestCalcCLCode1Time(t *testing.T) {
 	assert.Equal(t, "xz(yz)", CalcCLCode1Time("Sxyz", cs))
 	assert.Equal(t, "xz(yz)!", CalcCLCode1Time("Sxyz!", cs))
 	assert.Equal(t, "xz(yz)", CalcCLCode1Time("(S)xyz", cs))
@@ -166,7 +166,7 @@ func TestCalc(t *testing.T) {
 	assert.Equal(t, "Sxyz", CalcCLCode1Time("Sxyz", []Combinator{}))
 }
 
-func TestSplitSuff(t *testing.T) {
+func TestSplitPrefixArgsSuffixCombinators(t *testing.T) {
 	var (
 		pref string
 		args []string
@@ -185,7 +185,7 @@ func TestSplitSuff(t *testing.T) {
 
 }
 
-func TestCalcHeadCombinator(t *testing.T) {
+func TestCalcCombinatorArgs(t *testing.T) {
 	s := Combinator{
 		Name:      "S",
 		ArgsCount: 3,
@@ -242,7 +242,7 @@ func TestCalcHeadCombinator(t *testing.T) {
 	}
 }
 
-func TestGetPrefgixCombinator(t *testing.T) {
+func TestGetPrefixCombinator(t *testing.T) {
 	type TD struct {
 		inCLCode      string
 		inCombinators []Combinator
