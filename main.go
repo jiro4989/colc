@@ -66,9 +66,7 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		for _, s := range ss {
-			fmt.Println(s)
-		}
+		out(ss, opts)
 		return
 	}
 	// 引数指定ありの場合はファイル処理
@@ -78,9 +76,7 @@ func main() {
 			if err != nil {
 				return err
 			}
-			for _, s := range ss {
-				fmt.Println(s)
-			}
+			out(ss, opts)
 			return nil
 		})
 		if err != nil {
@@ -117,6 +113,33 @@ func calcCLCode(r io.Reader, opts options) ([]string, error) {
 		return nil, err
 	}
 	return res, nil
+}
+
+// out は行配列をオプションに応じて出力する。
+// 出力先ファイルが指定されていなければ標準出力する。
+// 指定があればファイル出力する。
+func out(lines []string, opts options) error {
+	if opts.OutFile == "" {
+		for _, v := range lines {
+			fmt.Println(v)
+		}
+		return nil
+	}
+
+	return WriteFile(opts.OutFile, lines)
+}
+
+func WriteFile(fn string, lines []string) error {
+	w, err := os.OpenFile(fn, os.O_RDWR|os.O_CREATE, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	defer w.Close()
+
+	for _, v := range lines {
+		fmt.Fprintln(w, v)
+	}
+	return nil
 }
 
 // ReadConfig は指定パスのJSON設定ファイルを読み取る
