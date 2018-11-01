@@ -77,19 +77,19 @@ func TestGetCombinatorArgs(t *testing.T) {
 	}
 	for _, td := range tds {
 		clcode, cs, expect, desc := td.clcode, td.cs, td.expect, td.desc
-		actual := GetCombinatorArgs(clcode, cs)
+		actual := getCombinatorArgs(clcode, cs)
 		assert.Equal(t, expect, actual, desc, clcode, cs)
 	}
 }
 
 func TestTrimBracket(t *testing.T) {
-	assert.Equal(t, "S", TrimBracket("(S)"), "1つ括弧を外す")
-	assert.Equal(t, "S", TrimBracket("((((S))))"), "ネストした括弧を外す")
-	assert.Equal(t, "(S)S", TrimBracket("((((S)S)))"), "ネストした括弧を外す")
-	assert.Equal(t, "S(S)S", TrimBracket("(((S(S)S)))"), "ネストした括弧を外す")
-	assert.Equal(t, "", TrimBracket(""), "空のときは空を返す")
-	assert.Equal(t, "(S", TrimBracket("(S"), "括弧不正のときはそのまま返す")
-	assert.Equal(t, "S)", TrimBracket("S)"), "括弧不正のときはそのまま返す")
+	assert.Equal(t, "S", trimBracket("(S)"), "1つ括弧を外す")
+	assert.Equal(t, "S", trimBracket("((((S))))"), "ネストした括弧を外す")
+	assert.Equal(t, "(S)S", trimBracket("((((S)S)))"), "ネストした括弧を外す")
+	assert.Equal(t, "S(S)S", trimBracket("(((S(S)S)))"), "ネストした括弧を外す")
+	assert.Equal(t, "", trimBracket(""), "空のときは空を返す")
+	assert.Equal(t, "(S", trimBracket("(S"), "括弧不正のときはそのまま返す")
+	assert.Equal(t, "S)", trimBracket("S)"), "括弧不正のときはそのまま返す")
 }
 
 func TestCalcCLCode(t *testing.T) {
@@ -156,14 +156,14 @@ func TestCalcCLCode(t *testing.T) {
 }
 
 func TestCalc(t *testing.T) {
-	assert.Equal(t, "xz(yz)", CalcHead("Sxyz", cs))
-	assert.Equal(t, "xz(yz)!", CalcHead("Sxyz!", cs))
-	assert.Equal(t, "xz(yz)", CalcHead("(S)xyz", cs))
-	assert.Equal(t, "xz(yz)xyz", CalcHead("(Sxyz)xyz", cs))
-	assert.Equal(t, "Sxy", CalcHead("Sxy", cs))
-	assert.Equal(t, "S", CalcHead("S", cs))
-	assert.Equal(t, "", CalcHead("", cs))
-	assert.Equal(t, "Sxyz", CalcHead("Sxyz", []Combinator{}))
+	assert.Equal(t, "xz(yz)", CalcCLCode1Time("Sxyz", cs))
+	assert.Equal(t, "xz(yz)!", CalcCLCode1Time("Sxyz!", cs))
+	assert.Equal(t, "xz(yz)", CalcCLCode1Time("(S)xyz", cs))
+	assert.Equal(t, "xz(yz)xyz", CalcCLCode1Time("(Sxyz)xyz", cs))
+	assert.Equal(t, "Sxy", CalcCLCode1Time("Sxy", cs))
+	assert.Equal(t, "S", CalcCLCode1Time("S", cs))
+	assert.Equal(t, "", CalcCLCode1Time("", cs))
+	assert.Equal(t, "Sxyz", CalcCLCode1Time("Sxyz", []Combinator{}))
 }
 
 func TestSplitSuff(t *testing.T) {
@@ -173,12 +173,12 @@ func TestSplitSuff(t *testing.T) {
 		suff string
 	)
 
-	pref, args, suff = SplitCombinatorArgsAndSuffix("Sxyz", cs)
+	pref, args, suff = splitPrefixArgsSuffixCombinators("Sxyz", cs)
 	assert.Equal(t, "S", pref)
 	assert.Equal(t, []string{"x", "y", "z"}, args)
 	assert.Equal(t, "", suff)
 
-	pref, args, suff = SplitCombinatorArgsAndSuffix("Sxyz!", cs)
+	pref, args, suff = splitPrefixArgsSuffixCombinators("Sxyz!", cs)
 	assert.Equal(t, "S", pref)
 	assert.Equal(t, []string{"x", "y", "z"}, args)
 	assert.Equal(t, "!", suff)
@@ -237,7 +237,7 @@ func TestCalcHeadCombinator(t *testing.T) {
 	}
 	for _, td := range tds {
 		expect, desc := td.out, td.desc
-		actual := CalcHeadCombinator(td.inCLCode, td.inCombinator)
+		actual := calcCombinatorArgs(td.inCLCode, td.inCombinator)
 		assert.Equal(t, expect, actual, desc, td.inCLCode, td.inCombinator)
 	}
 }
@@ -289,7 +289,7 @@ func TestGetPrefgixCombinator(t *testing.T) {
 	}
 	for _, td := range tds {
 		clcode, comb, desc, expect := td.inCLCode, td.inCombinators, td.desc, td.expect
-		actual := GetPrefixCombinator(clcode, comb)
+		actual := getPrefixCombinator(clcode, comb)
 		assert.Equal(t, expect, actual, desc, clcode, comb)
 	}
 }
