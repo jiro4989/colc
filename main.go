@@ -62,7 +62,7 @@ func main() {
 
 	// 引数指定なしの場合は標準入力を処理
 	if len(args) < 1 {
-		ss, err := calc(os.Stdin, opts)
+		ss, err := calcCLCode(os.Stdin, opts)
 		if err != nil {
 			panic(err)
 		}
@@ -74,7 +74,7 @@ func main() {
 	// 引数指定ありの場合はファイル処理
 	for _, fn := range args {
 		err := WithOpen(fn, func(r io.Reader) error {
-			ss, err := calc(r, opts)
+			ss, err := calcCLCode(r, opts)
 			if err != nil {
 				return err
 			}
@@ -103,7 +103,7 @@ func WithOpen(fn string, f func(r io.Reader) error) error {
 	return f(r)
 }
 
-func calc(r io.Reader, opts options) ([]string, error) {
+func calcCLCode(r io.Reader, opts options) ([]string, error) {
 	var res []string
 	// 入力をfloatに変換して都度計算
 	sc := bufio.NewScanner(r)
