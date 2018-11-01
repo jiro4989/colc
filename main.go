@@ -110,7 +110,7 @@ func calc(r io.Reader) ([]string, error) {
 	for sc.Scan() {
 		line := sc.Text()
 		line = strings.Trim(line, " ")
-		s := combinator.CalcCLCode(line, cs)
+		s := combinator.CalcCLCode(line, cs, -1)
 		res = append(res, s)
 	}
 	if err := sc.Err(); err != nil {
