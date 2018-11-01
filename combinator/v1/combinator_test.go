@@ -86,6 +86,20 @@ func TestCalcCLCode(t *testing.T) {
 			expect: "xz(yz)a",
 			desc:   "計算結果は結合される",
 		},
+		TD{
+			clcode: "SKIx",
+			cs:     cs,
+			n:      0,
+			expect: "SKIx",
+			desc:   "一度も計算しない",
+		},
+		TD{
+			clcode: "SSSKS",
+			cs:     cs,
+			n:      1,
+			expect: "SK(SK)S",
+			desc:   "一度だけ計算する",
+		},
 	}
 	for _, td := range tds {
 		clcode, cs, n, expect, desc := td.clcode, td.cs, td.n, td.expect, td.desc

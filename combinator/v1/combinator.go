@@ -14,6 +14,12 @@ type Combinator struct {
 
 // CalcCLCode は計算不可能になるまで計算した結果を返す。
 func CalcCLCode(clcode string, cs []Combinator, n int) string {
+	if n == 0 {
+		return clcode
+	}
+	if n != -1 {
+		n--
+	}
 	ret := CalcCLCode1Time(clcode, cs)
 	if ret == clcode {
 		return ret
