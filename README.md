@@ -61,6 +61,23 @@ go get github.com/jiro4989/colc
 
 または、このGitHubのReleaseページのバイナリをダウンロードする。
 
+### ヘルプ
+
+`colc -h`で確認できる。
+
+    Usage:
+      colc [OPTIONS]
+
+    Application Options:
+      -v, --version         バージョン情報
+      -s, --stepcount=      何ステップまで計算するか (default: -1)
+      -o, --outfile=        出力ファイルパス
+      -t, --outfiletype=    出力ファイルの種類(なし|json)
+      -c, --combinatorFile= コンビネータ定義ファイルパス
+
+    Help Options:
+      -h, --help            Show this help message
+
 ### 使い方
 
 ```bash
@@ -68,19 +85,18 @@ echo "Sxyz" | colc
 # -> xz(yz)
 
 colc clcode.txt
+
+colc clcode.txt clcode2.txt
+
+# ファイル出力
+colc clcode.txt -o out.txt
+
+# コンビネータ定義ファイルを読み込む
+colc -c config/combinator.json clcode.txt
 ```
 
 <!--
 ```bash
-echo "Sxyz" | colc
-# -> xz(yz)
-
-colc clcode.txt
-
-colc -f clcode1.txt -f clcode2.txt
-
-# ファイル出力
-colc clcode.txt -o out.txt
 
 # JSON出力
 colc clcode.txt -t json
@@ -93,9 +109,7 @@ colc clcode.txt -t json -o out.json
 1. 計算対象のテキストデータは行単位である。
 1. 引数(処理対象のテキストファイル)が未指定の場合、標準入力待ちとなる。
 1. 処理対象のテキストファイルは複数受け取れる。
-<!--
 1. 最後まで計算させたくない場合は、計算ステップ数を指定して実行できる。
--->
 
 ## 開発
 ### ヘルプ
