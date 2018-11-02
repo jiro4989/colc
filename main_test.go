@@ -3,11 +3,82 @@ package main
 import (
 	"bytes"
 	"io"
+	"os"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
+
+func TestMain(t *testing.T) {
+	os.Args = []string{
+		"main.go",
+		"-o",
+		"testdata/out/normal_clcode.list",
+		"testdata/in/normal_clcode.list",
+	}
+	main()
+
+	os.Args = []string{
+		"main.go",
+		"testdata/in/normal_clcode.list",
+	}
+	main()
+}
+
+func TestCalcOut(t *testing.T) {
+	f := func(ss ...string) io.Reader {
+		return bytes.NewBufferString(strings.Join(ss, "\n"))
+	}
+	o1 := options{StepCount: -1}
+	o2 := options{StepCount: 1}
+	type TD struct {
+		r       io.Reader
+		opts    options
+		success func([]string, options) error
+		failure func(error)
+	}
+	tds := []TD{
+		TD{
+			r:    f("Sxyz"),
+			opts: o1,
+			success: func(ss []string, opts options) error {
+				assert.Equal(t, []string{"xz(yz)"}, ss)
+				return nil
+			},
+			failure: func(err error) {
+				assert.NoError(t, err)
+			},
+		},
+		TD{
+			r:    f("Sxyz", "(SSSS)"),
+			opts: o1,
+			success: func(ss []string, opts options) error {
+				assert.Equal(t, []string{"xz(yz)", "SS(SS)"}, ss)
+				return nil
+			},
+			failure: func(err error) {
+				assert.NoError(t, err)
+			},
+		},
+		TD{
+			r:    f("KKxy"),
+			opts: o2,
+			success: func(ss []string, opts options) error {
+				assert.Equal(t, []string{"Ky"}, ss)
+				return nil
+			},
+			failure: func(err error) {
+				assert.NoError(t, err)
+			},
+		},
+	}
+	for _, v := range tds {
+		r, opts, success, failure := v.r, v.opts, v.success, v.failure
+		err := calcOut(r, opts, success, failure)
+		assert.NoError(t, err)
+	}
+}
 
 func TestCalcCLCode(t *testing.T) {
 	f := func(ss ...string) io.Reader {

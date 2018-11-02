@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -13,6 +12,7 @@ import (
 
 	flags "github.com/jessevdk/go-flags"
 	combinator "github.com/jiro4989/colc/combinator/v1"
+	colcio "github.com/jiro4989/colc/io"
 )
 
 var cs = []combinator.Combinator{
@@ -60,24 +60,22 @@ func init() {
 func main() {
 	opts, args := parseOptions()
 
+	failure := func(err error) {
+		panic(err)
+	}
+
 	// 引数指定なしの場合は標準入力を処理
 	if len(args) < 1 {
-		ss, err := calcCLCode(os.Stdin, opts)
-		if err != nil {
+		r := os.Stdin
+		if err := calcOut(r, opts, out, failure); err != nil {
 			panic(err)
 		}
-		out(ss, opts)
 		return
 	}
 	// 引数指定ありの場合はファイル処理
 	for _, fn := range args {
-		err := WithOpen(fn, func(r io.Reader) error {
-			ss, err := calcCLCode(r, opts)
-			if err != nil {
-				return err
-			}
-			out(ss, opts)
-			return nil
+		err := colcio.WithOpen(fn, func(r io.Reader) error {
+			return calcOut(r, opts, out, failure)
 		})
 		if err != nil {
 			panic(err)
@@ -85,23 +83,19 @@ func main() {
 	}
 }
 
-// WithOpen はファイルを開き、関数を適用する。
-func WithOpen(fn string, f func(r io.Reader) error) error {
-	if f == nil {
-		return errors.New("適用する関数がnilでした。")
-	}
-
-	r, err := os.Open(fn)
+// calcOut はCLCodeを計算して、出力する。
+// 計算結果を引数の関数に私、失敗時は引数に渡した関数を適用する。
+func calcOut(r io.Reader, opts options, success func([]string, options) error, failure func(error)) error {
+	ss, err := calcCLCode(r, opts)
 	if err != nil {
-		return err
+		failure(err)
 	}
-	defer r.Close()
-	return f(r)
+	return success(ss, opts)
 }
 
+// calcCLCode はCLCodeを計算し、スライスで返す。
 func calcCLCode(r io.Reader, opts options) ([]string, error) {
 	var res []string
-	// 入力をfloatに変換して都度計算
 	sc := bufio.NewScanner(r)
 	for sc.Scan() {
 		line := sc.Text()
@@ -126,20 +120,7 @@ func out(lines []string, opts options) error {
 		return nil
 	}
 
-	return WriteFile(opts.OutFile, lines)
-}
-
-func WriteFile(fn string, lines []string) error {
-	w, err := os.OpenFile(fn, os.O_RDWR|os.O_CREATE, os.ModePerm)
-	if err != nil {
-		return err
-	}
-	defer w.Close()
-
-	for _, v := range lines {
-		fmt.Fprintln(w, v)
-	}
-	return nil
+	return colcio.WriteFile(opts.OutFile, lines)
 }
 
 // ReadConfig は指定パスのJSON設定ファイルを読み取る
