@@ -14,7 +14,20 @@ import (
 	colcio "github.com/jiro4989/colc/io"
 )
 
-var cs = []combinator.Combinator{
+// options オプション引数
+type options struct {
+	Version        func() `short:"v" long:"version" description:"バージョン情報"`
+	StepCount      int    `short:"s" long:"stepcount" description:"何ステップまで計算するか" default:"-1"`
+	OutFile        string `short:"o" long:"outfile" description:"出力ファイルパス"`
+	OutFileType    string `short:"t" long:"outfiletype" description:"出力ファイルの種類(なし|json)"`
+	CombinatorFile string `short:"c" long:"combinatorFile" description:"コンビネータ定義ファイルパス"`
+}
+
+// コンビネータ設定
+type Combinators []combinator.Combinator
+
+// combinators はコンビネータ定義
+var combinators = []combinator.Combinator{
 	combinator.Combinator{
 		Name:      "S",
 		ArgsCount: 3,
@@ -32,25 +45,17 @@ var cs = []combinator.Combinator{
 	},
 }
 
-// options オプション引数
-type options struct {
-	Version     func() `short:"v" long:"version" description:"バージョン情報"`
-	StepCount   int    `short:"s" long:"stepcount" description:"何ステップまで計算するか" default:"-1"`
-	OutFile     string `short:"o" long:"outfile" description:"出力ファイルパス"`
-	OutFileType string `short:"t" long:"outfiletype" description:"出力ファイルの種類(なし|json)"`
-}
-
-// コンビネータ設定
-type Config []CombinatorFormat
-
-type CombinatorFormat struct {
-	ArgsCount      int    `json:"argsCount"`
-	CombinatorName string `json:"combinatorName"`
-	Format         string `json:"format"`
-}
-
 func main() {
 	opts, args := parseOptions()
+
+	// コンビネータのファイルパス指定があれば上書き
+	if opts.CombinatorFile != "" {
+		var err error
+		combinators, err = ReadCombinator(opts.CombinatorFile)
+		if err != nil {
+			panic(err)
+		}
+	}
 
 	failure := func(err error) {
 		panic(err)
@@ -64,6 +69,7 @@ func main() {
 		}
 		return
 	}
+
 	// 引数指定ありの場合はファイル処理
 	for _, fn := range args {
 		err := colcio.WithOpen(fn, func(r io.Reader) error {
@@ -92,7 +98,7 @@ func calcCLCode(r io.Reader, opts options) ([]string, error) {
 	for sc.Scan() {
 		line := sc.Text()
 		line = strings.Trim(line, " ")
-		s := combinator.CalcCLCode(line, cs, opts.StepCount)
+		s := combinator.CalcCLCode(line, combinators, opts.StepCount)
 		res = append(res, s)
 	}
 	if err := sc.Err(); err != nil {
@@ -115,18 +121,18 @@ func out(lines []string, opts options) error {
 	return colcio.WriteFile(opts.OutFile, lines)
 }
 
-// ReadConfig は指定パスのJSON設定ファイルを読み取る
-func ReadConfig(path string) (Config, error) {
+// ReadCombinator は指定パスのJSON設定ファイルを読み取る
+func ReadCombinator(path string) (Combinators, error) {
 	b, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
 
-	var config Config
-	if err := json.Unmarshal(b, &config); err != nil {
+	var combs Combinators
+	if err := json.Unmarshal(b, &combs); err != nil {
 		return nil, err
 	}
-	return config, nil
+	return combs, nil
 }
 
 // parseOptions はコマンドラインオプションを解析する。

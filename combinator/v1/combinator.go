@@ -7,9 +7,9 @@ import (
 
 // Combinator はコンビネータである。
 type Combinator struct {
-	Name      string
-	ArgsCount int
-	Format    string
+	Name      string `json:"name"`
+	ArgsCount int    `json:"argsCount"`
+	Format    string `json:"format"`
 }
 
 // CalcCLCode は計算不可能になるまで計算した結果を返す。
