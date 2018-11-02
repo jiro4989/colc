@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"strings"
 
@@ -48,13 +47,6 @@ type CombinatorFormat struct {
 	ArgsCount      int    `json:"argsCount"`
 	CombinatorName string `json:"combinatorName"`
 	Format         string `json:"format"`
-}
-
-// エラー出力ログ
-var logger = log.New(os.Stderr, "", 0)
-
-func init() {
-	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 }
 
 func main() {
