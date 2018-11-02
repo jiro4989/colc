@@ -1,5 +1,23 @@
 [
-  { "combinatorName":"S", "argsCount":3, "format":"{0}{2}({1}{2})" },
-  { "combinatorName":"K", "argsCount":2, "format":"{0}" },
-  { "combinatorName":"I", "argsCount":1, "format":"{0}" }
+  { "name":"S", "argsCount":3, "format":"{0}{2}({1}{2})" },
+  { "name":"K", "argsCount":2, "format":"{0}" },
+  { "name":"I", "argsCount":1, "format":"{0}" },
+  { "name":"B", "argsCount":3, "format":"{0}({1}{2})" },
+  { "name":"C", "argsCount":3, "format":"{0}{2}{1}" },
+  { "name":"D", "argsCount":0, "format":"C(BC(B(CI)K))" },
+  { "name":"<0>", "argsCount":0, "format":"KI" },
+  { "name":"<1>", "argsCount":0, "format":"SB(KI)" },
+  { "name":"<zero>", "argsCount":0, "format":"KI" },
+  { "name":"<suc>", "argsCount":0, "format":"SB" },
+  { "name":"<one>", "argsCount":0, "format":"<suc><zero>" },
+  { "name":"<p1_1>", "argsCount":0, "format":"I" },
+  { "name":"<p2_1>", "argsCount":0, "format":"K" },
+  { "name":"<p2_2>", "argsCount":0, "format":"KI" },
+  { "name":"<p3_1>", "argsCount":0, "format":"S(KK)K" },
+  { "name":"<p3_2>", "argsCount":0, "format":"KK" },
+  { "name":"<p3_3>", "argsCount":0, "format":"K(KI)" },
+  { "name":"Q", "argsCount":2, "format":"D(SB({1}<zero>))({0}({1}<zero>)({1}<one>))" },
+  { "name":"R", "argsCount":3, "format":"{2}(Q{1})(D<zero>{0})<one>" },
+  { "name":"<true>", "argsCount":0, "format":"K" },
+  { "name":"<false>", "argsCount":0, "format":"SK" }
 ]
