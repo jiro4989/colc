@@ -24,6 +24,17 @@ func TestMain(t *testing.T) {
 		"testdata/in/normal_clcode.list",
 	}
 	main()
+
+	os.Args = []string{
+		"main.go",
+		"-c",
+		"config/combinator.json",
+		"-o",
+		"testdata/out/read_combinator.list",
+		"testdata/in/normal_clcode.list",
+	}
+	main()
+
 }
 
 func TestCalcOut(t *testing.T) {
@@ -32,6 +43,7 @@ func TestCalcOut(t *testing.T) {
 	}
 	o1 := options{StepCount: -1}
 	o2 := options{StepCount: 1}
+	o3 := options{StepCount: -1, CombinatorFile: "config/combinator.json"}
 	type TD struct {
 		r       io.Reader
 		opts    options
@@ -66,6 +78,28 @@ func TestCalcOut(t *testing.T) {
 			opts: o2,
 			success: func(ss []string, opts options) error {
 				assert.Equal(t, []string{"Ky"}, ss)
+				return nil
+			},
+			failure: func(err error) {
+				assert.NoError(t, err)
+			},
+		},
+		TD{
+			r:    f("<true>xy"),
+			opts: o3,
+			success: func(ss []string, opts options) error {
+				assert.Equal(t, []string{"x"}, ss)
+				return nil
+			},
+			failure: func(err error) {
+				assert.NoError(t, err)
+			},
+		},
+		TD{
+			r:    f("SBKI"),
+			opts: o3,
+			success: func(ss []string, opts options) error {
+				assert.Equal(t, []string{"BI(KI)"}, ss)
 				return nil
 			},
 			failure: func(err error) {
