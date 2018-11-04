@@ -47,7 +47,7 @@ lint: ## 静的解析をかける
 	gometalinter
 
 test: ## テストコードを実行する
-	go test -cover ./...
+	go test -v -cover ./...
 
 clean: ## バイナリ、配布物ディレクトリを削除する
 	-rm -rf bin
