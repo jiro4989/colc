@@ -25,6 +25,13 @@ type options struct {
 	NoPrintHeader  bool   `short:"n" long:"noprintheader" description:"printフラグON時のヘッダ出力を消す"`
 }
 
+// go:generate easytags $GOFILE
+type OutValue struct {
+	Input   string
+	Process []string
+	Result  string
+}
+
 // コンビネータ設定
 type Combinators []combinator.Combinator
 
