@@ -200,6 +200,8 @@ func TestCalcCLCode(t *testing.T) {
 	o5 := options{StepCount: -1, OutFileType: "json", PrintFlag: true}
 	o6 := options{StepCount: -1, OutFileType: "json", PrintFlag: true, Indent: "  "}
 	o7 := options{StepCount: -1, PrintFlag: true}
+	o8 := options{StepCount: 2, PrintFlag: true}
+	o9 := options{StepCount: 2, OutFileType: "json", PrintFlag: true}
 
 	tds := []TD{
 		TD{
@@ -276,6 +278,18 @@ func TestCalcCLCode(t *testing.T) {
 			opts: o7,
 			s:    []string{"=== SKIx ===", "Kx(Ix)", "x", "x"},
 			desc: "正常系:計算過程の出力",
+		},
+		TD{
+			r:    f("SSSSSS"),
+			opts: o8,
+			s:    []string{"=== SSSSSS ===", "SS(SS)SS", "SS((SS)S)S", "SS((SS)S)S"},
+			desc: "正常系:計算回数指定",
+		},
+		TD{
+			r:    f("SSSSSS"),
+			opts: o9,
+			s:    []string{`[{"input":"SSSSSS","process":["SS(SS)SS","SS((SS)S)S"],"result":"SS((SS)S)S"}]`},
+			desc: "正常系:計算回数指定(json)",
 		},
 	}
 	for _, v := range tds {
