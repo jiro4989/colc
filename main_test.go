@@ -35,6 +35,28 @@ func TestMain(t *testing.T) {
 	}
 	main()
 
+	os.Args = []string{
+		"main.go",
+		"-p",
+		"testdata/in/normal_clcode.list",
+	}
+	main()
+
+	os.Args = []string{
+		"main.go",
+		"-pn",
+		"testdata/in/normal_clcode.list",
+	}
+	main()
+
+	os.Args = []string{
+		"main.go",
+		"-t",
+		"json",
+		"testdata/in/normal_clcode.list",
+	}
+	main()
+
 }
 
 func TestCalcOut(t *testing.T) {

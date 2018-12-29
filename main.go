@@ -127,6 +127,15 @@ func calcCLCode(r io.Reader, opts options) ([]string, error) {
 		} else {
 			s = combinator.CalcCLCode(line, combinators, opts.StepCount)
 		}
+		switch opts.OutFileType {
+		case "json":
+			ov := OutValue{Input: line, Result: s}
+			b, err := json.Marshal(ov)
+			if err != nil {
+				return nil, err
+			}
+			s = string(b)
+		}
 		res = append(res, s)
 	}
 	if err := sc.Err(); err != nil {
