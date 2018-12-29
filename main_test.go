@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -11,6 +12,13 @@ import (
 )
 
 func TestMain(t *testing.T) {
+	info := func(msg string) {
+		fmt.Println("------------------------------------------------------------")
+		fmt.Println("    " + msg)
+		fmt.Println("------------------------------------------------------------")
+	}
+
+	info("普通の処理をファイル出力する")
 	os.Args = []string{
 		"main.go",
 		"-o",
@@ -19,12 +27,14 @@ func TestMain(t *testing.T) {
 	}
 	main()
 
+	info("普通の処理を標準出力する")
 	os.Args = []string{
 		"main.go",
 		"testdata/in/normal_clcode.list",
 	}
 	main()
 
+	info("コンビネータ定義ファイルを読み込む")
 	os.Args = []string{
 		"main.go",
 		"-c",
@@ -35,6 +45,7 @@ func TestMain(t *testing.T) {
 	}
 	main()
 
+	info("計算過程を標準出力する")
 	os.Args = []string{
 		"main.go",
 		"-p",
@@ -42,6 +53,7 @@ func TestMain(t *testing.T) {
 	}
 	main()
 
+	info("計算過程を標準出力するが、ヘッダを出力しない")
 	os.Args = []string{
 		"main.go",
 		"-pn",
@@ -49,6 +61,7 @@ func TestMain(t *testing.T) {
 	}
 	main()
 
+	info("計算結果をJSON出力する")
 	os.Args = []string{
 		"main.go",
 		"-t",
