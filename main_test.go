@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -11,6 +12,13 @@ import (
 )
 
 func TestMain(t *testing.T) {
+	info := func(msg string) {
+		fmt.Println("------------------------------------------------------------")
+		fmt.Println("    " + msg)
+		fmt.Println("------------------------------------------------------------")
+	}
+
+	info("普通の処理をファイル出力する")
 	os.Args = []string{
 		"main.go",
 		"-o",
@@ -19,18 +27,78 @@ func TestMain(t *testing.T) {
 	}
 	main()
 
+	info("普通の処理を標準出力する")
 	os.Args = []string{
 		"main.go",
 		"testdata/in/normal_clcode.list",
 	}
 	main()
 
+	info("コンビネータ定義ファイルを読み込む")
 	os.Args = []string{
 		"main.go",
 		"-c",
 		"config/combinator.json",
 		"-o",
 		"testdata/out/read_combinator.list",
+		"testdata/in/normal_clcode.list",
+	}
+	main()
+
+	info("計算過程を標準出力する")
+	os.Args = []string{
+		"main.go",
+		"-p",
+		"testdata/in/normal_clcode.list",
+	}
+	main()
+
+	info("計算過程を標準出力するが、ヘッダを出力しない")
+	os.Args = []string{
+		"main.go",
+		"-pn",
+		"testdata/in/normal_clcode.list",
+	}
+	main()
+
+	info("計算結果をJSON出力する")
+	os.Args = []string{
+		"main.go",
+		"-t",
+		"json",
+		"testdata/in/normal_clcode.list",
+	}
+	main()
+
+	info("計算結果をJSON出力する + インデント")
+	os.Args = []string{
+		"main.go",
+		"-t",
+		"json",
+		"-i",
+		"  ",
+		"testdata/in/normal_clcode.list",
+	}
+	main()
+
+	info("計算結果をJSON出力する + TABインデント")
+	os.Args = []string{
+		"main.go",
+		"-t",
+		"json",
+		"-i",
+		"\t",
+		"testdata/in/normal_clcode.list",
+	}
+	main()
+
+	info("計算結果をJSON出力する + インデント + 計算過程出力")
+	os.Args = []string{
+		"main.go",
+		"-pt",
+		"json",
+		"-i",
+		"  ",
 		"testdata/in/normal_clcode.list",
 	}
 	main()
@@ -126,8 +194,12 @@ func TestCalcCLCode(t *testing.T) {
 	}
 
 	o1 := options{StepCount: -1}
-	o2 := options{StepCount: 1}
+	o2 := options{StepCount: 1, Indent: "  "}
 	o3 := options{StepCount: 0}
+	o4 := options{StepCount: -1, OutFileType: "json"}
+	o5 := options{StepCount: -1, OutFileType: "json", PrintFlag: true}
+	o6 := options{StepCount: -1, OutFileType: "json", PrintFlag: true, Indent: "  "}
+	o7 := options{StepCount: -1, PrintFlag: true}
 
 	tds := []TD{
 		TD{
@@ -146,7 +218,7 @@ func TestCalcCLCode(t *testing.T) {
 			r:    f("Sxyz", "SKII"),
 			opts: o2,
 			s:    []string{"xz(yz)", "KI(II)"},
-			desc: "正常系:計算回数指定",
+			desc: "正常系:計算回数指定。及び、JSON指定がない状態でインデント指定をしても意味がない",
 		},
 		TD{
 			r:    f("Sxyz", "SKII"),
@@ -159,6 +231,51 @@ func TestCalcCLCode(t *testing.T) {
 			opts: o1,
 			s:    []string{"SS((SS)S)"},
 			desc: "正常系:ネスト括弧の計算をする",
+		},
+		TD{
+			r:    f("Sxyz"),
+			opts: o4,
+			s:    []string{`[{"input":"Sxyz","process":null,"result":"xz(yz)"}]`},
+			desc: "正常系:計算結果のJSON出力",
+		},
+		TD{
+			r:    f("Sxyz", "Sxyz"),
+			opts: o4,
+			s:    []string{`[{"input":"Sxyz","process":null,"result":"xz(yz)"},{"input":"Sxyz","process":null,"result":"xz(yz)"}]`},
+			desc: "正常系:計算結果の複数JSON出力",
+		},
+		TD{
+			r:    f("SKIx"),
+			opts: o5,
+			s:    []string{`[{"input":"SKIx","process":["Kx(Ix)","x"],"result":"x"}]`},
+			desc: "正常系:計算結果のJSON出力",
+		},
+		TD{
+			r:    f("Sxyz", "Sxyz"),
+			opts: o6,
+			s: []string{`[
+  {
+    "input": "Sxyz",
+    "process": [
+      "xz(yz)"
+    ],
+    "result": "xz(yz)"
+  },
+  {
+    "input": "Sxyz",
+    "process": [
+      "xz(yz)"
+    ],
+    "result": "xz(yz)"
+  }
+]`},
+			desc: "正常系:2スペースインデントされたJSON出力",
+		},
+		TD{
+			r:    f("SKIx"),
+			opts: o7,
+			s:    []string{"=== SKIx ===", "Kx(Ix)", "x", "x"},
+			desc: "正常系:計算過程の出力",
 		},
 	}
 	for _, v := range tds {
