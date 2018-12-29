@@ -163,6 +163,8 @@ func TestCalcCLCode(t *testing.T) {
 	o1 := options{StepCount: -1}
 	o2 := options{StepCount: 1}
 	o3 := options{StepCount: 0}
+	o4 := options{StepCount: -1, OutFileType: "json"}
+	o5 := options{StepCount: -1, OutFileType: "json", PrintFlag: true}
 
 	tds := []TD{
 		TD{
@@ -194,6 +196,24 @@ func TestCalcCLCode(t *testing.T) {
 			opts: o1,
 			s:    []string{"SS((SS)S)"},
 			desc: "正常系:ネスト括弧の計算をする",
+		},
+		TD{
+			r:    f("Sxyz"),
+			opts: o4,
+			s:    []string{`[{"input":"Sxyz","process":null,"result":"xz(yz)"}]`},
+			desc: "正常系:計算結果のJSON出力",
+		},
+		TD{
+			r:    f("Sxyz", "Sxyz"),
+			opts: o4,
+			s:    []string{`[{"input":"Sxyz","process":null,"result":"xz(yz)"},{"input":"Sxyz","process":null,"result":"xz(yz)"}]`},
+			desc: "正常系:計算結果の複数JSON出力",
+		},
+		TD{
+			r:    f("SKIx"),
+			opts: o5,
+			s:    []string{`[{"input":"SKIx","process":["Kx(Ix)","x"],"result":"x"}]`},
+			desc: "正常系:計算結果のJSON出力",
 		},
 	}
 	for _, v := range tds {

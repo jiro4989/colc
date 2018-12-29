@@ -30,6 +30,7 @@ type OutValue struct {
 	Process []string `json:"process"`
 	Result  string   `json:"result"`
 }
+type OutValues []OutValue
 
 // コンビネータ設定
 type Combinators []combinator.Combinator
@@ -100,14 +101,21 @@ func calcOut(r io.Reader, opts options, success func([]string, options) error, f
 }
 
 // calcCLCode はCLCodeを計算し、スライスで返す。
+// OutFileTypeにJSON指定があった場合は、JSON文字列として返す
 func calcCLCode(r io.Reader, opts options) ([]string, error) {
-	var res []string
+	var (
+		res []string
+		ovs OutValues
+	)
 	sc := bufio.NewScanner(r)
 	for sc.Scan() {
 		line := sc.Text()
 		line = strings.Trim(line, " ")
 
-		var s string
+		var (
+			s       string
+			process []string
+		)
 		// 出力フラグがある場合は、1ステップ毎に出力
 		if opts.PrintFlag {
 			// 出力無効化フラグがONなら非表示
@@ -121,26 +129,40 @@ func calcCLCode(r io.Reader, opts options) ([]string, error) {
 					break
 				}
 				bef = aft
+				switch opts.OutFileType {
+				case "json":
+					process = append(process, bef)
+				}
 				fmt.Println(bef)
 			}
 			s = bef
 		} else {
 			s = combinator.CalcCLCode(line, combinators, opts.StepCount)
 		}
+
 		switch opts.OutFileType {
 		case "json":
-			ov := OutValue{Input: line, Result: s}
-			b, err := json.Marshal(ov)
-			if err != nil {
-				return nil, err
-			}
-			s = string(b)
+			ov := OutValue{Input: line, Process: process, Result: s}
+			ovs = append(ovs, ov)
+			continue
 		}
 		res = append(res, s)
 	}
 	if err := sc.Err(); err != nil {
 		return nil, err
 	}
+
+	// JSON出力のときはJSON配列としてすでに完成されたstringをひとつだけ返す
+	switch opts.OutFileType {
+	case "json":
+		b, err := json.Marshal(ovs)
+		if err != nil {
+			return nil, err
+		}
+		s := string(b)
+		res = []string{s}
+	}
+
 	return res, nil
 }
 
