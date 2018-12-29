@@ -73,7 +73,10 @@ go get github.com/jiro4989/colc
       -s, --stepcount=      何ステップまで計算するか (default: -1)
       -o, --outfile=        出力ファイルパス
       -t, --outfiletype=    出力ファイルの種類(なし|json)
+      -i, --indent=         outfiletypeが有効時に整形して出力する
       -c, --combinatorFile= コンビネータ定義ファイルパス
+      -p, --print           計算過程を出力する
+      -n, --noprintheader   printフラグON時のヘッダ出力を消す
 
     Help Options:
       -h, --help            Show this help message
