@@ -107,8 +107,8 @@ func calcCLCode(r io.Reader, opts options) ([]string, error) {
 	var (
 		res []string
 		ovs OutValues
+		sc  = bufio.NewScanner(r)
 	)
-	sc := bufio.NewScanner(r)
 	for sc.Scan() {
 		line := sc.Text()
 		line = strings.Trim(line, " ")
@@ -123,8 +123,14 @@ func calcCLCode(r io.Reader, opts options) ([]string, error) {
 			if !opts.NoPrintHeader {
 				res = append(res, "=== "+line+" ===")
 			}
-			bef := line
+			var (
+				bef = line
+				c   = opts.StepCount
+			)
 			for {
+				if c == 0 {
+					break
+				}
 				aft := combinator.CalcCLCode1Time(bef, combinators)
 				if bef == aft {
 					break
@@ -137,6 +143,7 @@ func calcCLCode(r io.Reader, opts options) ([]string, error) {
 				}
 
 				res = append(res, bef)
+				c--
 			}
 			s = bef
 		} else {
