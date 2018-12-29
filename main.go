@@ -99,7 +99,23 @@ func calcCLCode(r io.Reader, opts options) ([]string, error) {
 	for sc.Scan() {
 		line := sc.Text()
 		line = strings.Trim(line, " ")
-		s := combinator.CalcCLCode(line, combinators, opts.StepCount)
+
+		var s string
+		// 出力フラグがある場合は、1ステップ毎に出力
+		if opts.PrintFlag {
+			bef := line
+			for {
+				aft := combinator.CalcCLCode1Time(bef, combinators)
+				if bef == aft {
+					break
+				}
+				bef = aft
+				fmt.Println(bef)
+			}
+			s = bef
+		} else {
+			s = combinator.CalcCLCode(line, combinators, opts.StepCount)
+		}
 		res = append(res, s)
 	}
 	if err := sc.Err(); err != nil {
