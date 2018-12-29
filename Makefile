@@ -32,6 +32,7 @@ archive: xbuild ## クロスコンパイルしたバイナリとREADMEを圧縮�
 		| while read -r d; \
 		do \
 			cp $(README) $$d/ ; \
+			cp LICENSE $$d/ ; \
 		done
 	cd $(DIST_DIR) && \
 		find . -maxdepth 1 -mindepth 1 -a -type d  \
