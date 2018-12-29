@@ -70,6 +70,39 @@ func TestMain(t *testing.T) {
 	}
 	main()
 
+	info("計算結果をJSON出力する + インデント")
+	os.Args = []string{
+		"main.go",
+		"-t",
+		"json",
+		"-i",
+		"  ",
+		"testdata/in/normal_clcode.list",
+	}
+	main()
+
+	info("計算結果をJSON出力する + TABインデント")
+	os.Args = []string{
+		"main.go",
+		"-t",
+		"json",
+		"-i",
+		"\t",
+		"testdata/in/normal_clcode.list",
+	}
+	main()
+
+	info("計算結果をJSON出力する + インデント + 計算過程出力")
+	os.Args = []string{
+		"main.go",
+		"-pt",
+		"json",
+		"-i",
+		"  ",
+		"testdata/in/normal_clcode.list",
+	}
+	main()
+
 }
 
 func TestCalcOut(t *testing.T) {
@@ -161,10 +194,12 @@ func TestCalcCLCode(t *testing.T) {
 	}
 
 	o1 := options{StepCount: -1}
-	o2 := options{StepCount: 1}
+	o2 := options{StepCount: 1, Indent: "  "}
 	o3 := options{StepCount: 0}
 	o4 := options{StepCount: -1, OutFileType: "json"}
 	o5 := options{StepCount: -1, OutFileType: "json", PrintFlag: true}
+	o6 := options{StepCount: -1, OutFileType: "json", PrintFlag: true, Indent: "  "}
+	o7 := options{StepCount: -1, PrintFlag: true}
 
 	tds := []TD{
 		TD{
@@ -183,7 +218,7 @@ func TestCalcCLCode(t *testing.T) {
 			r:    f("Sxyz", "SKII"),
 			opts: o2,
 			s:    []string{"xz(yz)", "KI(II)"},
-			desc: "正常系:計算回数指定",
+			desc: "正常系:計算回数指定。及び、JSON指定がない状態でインデント指定をしても意味がない",
 		},
 		TD{
 			r:    f("Sxyz", "SKII"),
@@ -214,6 +249,33 @@ func TestCalcCLCode(t *testing.T) {
 			opts: o5,
 			s:    []string{`[{"input":"SKIx","process":["Kx(Ix)","x"],"result":"x"}]`},
 			desc: "正常系:計算結果のJSON出力",
+		},
+		TD{
+			r:    f("Sxyz", "Sxyz"),
+			opts: o6,
+			s: []string{`[
+  {
+    "input": "Sxyz",
+    "process": [
+      "xz(yz)"
+    ],
+    "result": "xz(yz)"
+  },
+  {
+    "input": "Sxyz",
+    "process": [
+      "xz(yz)"
+    ],
+    "result": "xz(yz)"
+  }
+]`},
+			desc: "正常系:2スペースインデントされたJSON出力",
+		},
+		TD{
+			r:    f("SKIx"),
+			opts: o7,
+			s:    []string{"=== SKIx ===", "Kx(Ix)", "x", "x"},
+			desc: "正常系:計算過程の出力",
 		},
 	}
 	for _, v := range tds {

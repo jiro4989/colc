@@ -20,6 +20,7 @@ type options struct {
 	StepCount      int    `short:"s" long:"stepcount" description:"何ステップまで計算するか" default:"-1"`
 	OutFile        string `short:"o" long:"outfile" description:"出力ファイルパス"`
 	OutFileType    string `short:"t" long:"outfiletype" description:"出力ファイルの種類(なし|json)"`
+	Indent         string `short:"i" long:"indent" description:"outfiletypeが有効時に整形して出力する"`
 	CombinatorFile string `short:"c" long:"combinatorFile" description:"コンビネータ定義ファイルパス"`
 	PrintFlag      bool   `short:"p" long:"print" description:"計算過程を出力する"`
 	NoPrintHeader  bool   `short:"n" long:"noprintheader" description:"printフラグON時のヘッダ出力を消す"`
@@ -120,7 +121,7 @@ func calcCLCode(r io.Reader, opts options) ([]string, error) {
 		if opts.PrintFlag {
 			// 出力無効化フラグがONなら非表示
 			if !opts.NoPrintHeader {
-				fmt.Println("=== " + line + " ===")
+				res = append(res, "=== "+line+" ===")
 			}
 			bef := line
 			for {
@@ -129,23 +130,27 @@ func calcCLCode(r io.Reader, opts options) ([]string, error) {
 					break
 				}
 				bef = aft
+
 				switch opts.OutFileType {
 				case "json":
 					process = append(process, bef)
 				}
-				fmt.Println(bef)
+
+				res = append(res, bef)
 			}
 			s = bef
 		} else {
 			s = combinator.CalcCLCode(line, combinators, opts.StepCount)
 		}
 
+		// JSON出力するときは最後にresを上書きするのでappendしないためにcontinue
 		switch opts.OutFileType {
 		case "json":
 			ov := OutValue{Input: line, Process: process, Result: s}
 			ovs = append(ovs, ov)
 			continue
 		}
+
 		res = append(res, s)
 	}
 	if err := sc.Err(); err != nil {
@@ -155,7 +160,15 @@ func calcCLCode(r io.Reader, opts options) ([]string, error) {
 	// JSON出力のときはJSON配列としてすでに完成されたstringをひとつだけ返す
 	switch opts.OutFileType {
 	case "json":
-		b, err := json.Marshal(ovs)
+		var (
+			b   []byte
+			err error
+		)
+		if opts.Indent != "" {
+			b, err = json.MarshalIndent(ovs, "", opts.Indent)
+		} else {
+			b, err = json.Marshal(ovs)
+		}
 		if err != nil {
 			return nil, err
 		}
