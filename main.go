@@ -84,7 +84,7 @@ func main() {
 }
 
 // calcOut はCLCodeを計算して、出力する。
-// 計算結果を引数の関数に私、失敗時は引数に渡した関数を適用する。
+// 計算結果を引数の関数に渡し、失敗時は引数に渡した関数を適用する。
 func calcOut(r io.Reader, opts options, success func([]string, options) error, failure func(error)) error {
 	ss, err := calcCLCode(r, opts)
 	if err != nil {
