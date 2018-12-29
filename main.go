@@ -21,6 +21,7 @@ type options struct {
 	OutFile        string `short:"o" long:"outfile" description:"出力ファイルパス"`
 	OutFileType    string `short:"t" long:"outfiletype" description:"出力ファイルの種類(なし|json)"`
 	CombinatorFile string `short:"c" long:"combinatorFile" description:"コンビネータ定義ファイルパス"`
+	PrintFlag      bool   `short:"p" long:"print" description:"計算過程を出力する"`
 }
 
 // コンビネータ設定
