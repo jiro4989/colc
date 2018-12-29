@@ -100,6 +100,8 @@ func calcCLCode(r io.Reader, opts options) ([]string, error) {
 		line := sc.Text()
 		line = strings.Trim(line, " ")
 
+		fmt.Println("=== " + line + " ===")
+
 		var s string
 		// 出力フラグがある場合は、1ステップ毎に出力
 		if opts.PrintFlag {
