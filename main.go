@@ -22,6 +22,7 @@ type options struct {
 	OutFileType    string `short:"t" long:"outfiletype" description:"出力ファイルの種類(なし|json)"`
 	CombinatorFile string `short:"c" long:"combinatorFile" description:"コンビネータ定義ファイルパス"`
 	PrintFlag      bool   `short:"p" long:"print" description:"計算過程を出力する"`
+	NoPrintHeader  bool   `short:"n" long:"noprintheader" description:"printフラグON時のヘッダ出力を消す"`
 }
 
 // コンビネータ設定
@@ -100,11 +101,13 @@ func calcCLCode(r io.Reader, opts options) ([]string, error) {
 		line := sc.Text()
 		line = strings.Trim(line, " ")
 
-		fmt.Println("=== " + line + " ===")
-
 		var s string
 		// 出力フラグがある場合は、1ステップ毎に出力
 		if opts.PrintFlag {
+			// 出力無効化フラグがONなら非表示
+			if !opts.NoPrintHeader {
+				fmt.Println("=== " + line + " ===")
+			}
 			bef := line
 			for {
 				aft := combinator.CalcCLCode1Time(bef, combinators)
