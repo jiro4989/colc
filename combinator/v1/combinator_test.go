@@ -108,6 +108,25 @@ func TestCalcCLCode(t *testing.T) {
 	}
 }
 
+func TestGetBracketCombinator(t *testing.T) {
+	type TD struct {
+		clcode string
+		expect string
+	}
+	tds := []TD{
+		TD{clcode: "(S)KIx", expect: "(S)"},
+		TD{clcode: "(SKI)x", expect: "(SKI)"},
+		TD{clcode: "(SKI)", expect: "(SKI)"},
+		TD{clcode: "S(SKI)", expect: "S"},
+		TD{clcode: "(SKI", expect: "(SKI"},
+	}
+	for _, v := range tds {
+		clcode, expect := v.clcode, v.expect
+		got1 := getBracketCombinator(clcode)
+		assert.Equal(t, expect, got1)
+	}
+}
+
 func TestCalcCLCode1Time(t *testing.T) {
 	assert.Equal(t, "xz(yz)", CalcCLCode1Time("Sxyz", cs))
 	assert.Equal(t, "xz(yz)!", CalcCLCode1Time("Sxyz!", cs))

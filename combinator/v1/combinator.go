@@ -90,7 +90,26 @@ func splitPrefixArgsSuffixCombinators(clcode string, cs []Combinator) (string, [
 	return pref, args, suff
 }
 
+// getBracketCombinator は先頭の括弧で括られたコンビネータを返す
+func getBracketCombinator(clcode string) (ret string) {
+	var i int
+	for _, c := range clcode {
+		ret += fmt.Sprintf("%v", string(c))
+		switch c {
+		case '(':
+			i++
+		case ')':
+			i--
+		}
+		if i <= 0 {
+			break
+		}
+	}
+	return
+}
+
 // getPrefixCombinator はCLCodeの先頭のコンビネータを返す。
+// 先頭のコンビネータとは、括弧で括られたものを含む
 // 引数に渡している定義済みコンビネータが存在した場合、複数文字でも返す。
 func getPrefixCombinator(clcode string, cs []Combinator) string {
 	if len(clcode) < 1 {
@@ -105,44 +124,7 @@ func getPrefixCombinator(clcode string, cs []Combinator) string {
 		}
 	}
 
-	var (
-		ret   string
-		pref  = clcode[:1] // 先頭の文字
-		depth int          // 括弧のネストの深さ
-	)
-
-	if pref == "(" {
-		for {
-			if len(clcode) <= 0 {
-				return ret
-			}
-			pref = clcode[:1]
-			if pref == "" {
-				return ret
-			}
-			if depth < 0 {
-				return ""
-			}
-
-			if pref == "(" {
-				depth++
-				goto endfor
-			}
-			if pref == ")" {
-				depth--
-				goto endfor
-			}
-		endfor:
-			ret += pref
-			clcode = clcode[1:]
-
-			if depth == 0 {
-				return ret
-			}
-		}
-	}
-
-	return pref
+	return getBracketCombinator(clcode)
 }
 
 // getCombinatorArgs は先頭のコンビネータを判定し、計算対象のコンビネータを返却する。
