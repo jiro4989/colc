@@ -12,8 +12,7 @@ EXTERNAL_TOOLS := \
 	github.com/golang/dep/cmd/dep \
 	github.com/mitchellh/gox \
 	github.com/tcnksm/ghr \
-	github.com/motemen/gobump/cmd/gobump \
-	github.com/alecthomas/gometalinter
+	github.com/motemen/gobump/cmd/gobump \ github.com/alecthomas/gometalinter
 
 help: ## ドキュメントのヘルプを表示する。
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -68,4 +67,7 @@ graph: ## グラフ画像を生成する
 	docker build ./graphviz -t graphviz
 	docker run -v `pwd`/doc:/root/doc -v `pwd`/script/generate_graph.sh:/generate_graph.sh -it graphviz /generate_graph.sh
 
-.PHONY: help build install xbuild archive release lint test clean deps bootstrap graph
+js:
+	gopherjs build js/colc/colc.go -o static/js/colc.js
+
+.PHONY: help build install xbuild archive release lint test clean deps bootstrap graph js

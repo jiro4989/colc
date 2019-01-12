@@ -1,0 +1,12 @@
+# github.com/davecgh/go-spew v1.1.1
+github.com/davecgh/go-spew/spew
+# github.com/gopherjs/gopherjs v0.0.0-20181103185306-d547d1d9531e
+github.com/gopherjs/gopherjs/js
+# github.com/gopherjs/jquery v0.0.0-20180404123100-3ba2b901425e
+github.com/gopherjs/jquery
+# github.com/jessevdk/go-flags v1.4.0
+github.com/jessevdk/go-flags
+# github.com/pmezard/go-difflib v1.0.0
+github.com/pmezard/go-difflib/difflib
+# github.com/stretchr/testify v1.2.2
+github.com/stretchr/testify/assert
