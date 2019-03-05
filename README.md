@@ -1,9 +1,9 @@
-# colc (COmbinator Logic Calculator)
+# colc (COmbinatory Logic Calculator)
 [![Build Status](https://travis-ci.org/jiro4989/colc.svg?branch=master)](https://travis-ci.org/jiro4989/colc)
 
-Combinator Logicをコマンドラインから使うためのツール
+Combinatory Logicをコマンドラインから使うためのツール
 
-## コンビネータ論理(Combinator Logic)とは
+## コンビネータ論理(Combinatory Logic)とは
 引数に関数を受け取る関数(コンビネータ)のみで計算をするという考え方をコンビネータ
 論理という。
 チューリング完全であることが証明されているため、コンピュータで可能な計算は全てコ
