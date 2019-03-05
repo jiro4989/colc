@@ -1,7 +1,5 @@
 language: go
 
-install:
-  - make deps
 script:
-  - make test
-  - make install
+  - env GO111MODULE=on go build
+  - env GO111MODULE=on go test -cover ./...
