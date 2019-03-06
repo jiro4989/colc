@@ -9,17 +9,18 @@ XBUILD_TARGETS := \
 DIST_DIR := dist/$(VERSION)
 README := README.md
 EXTERNAL_TOOLS := \
-	github.com/golang/dep/cmd/dep \
 	github.com/mitchellh/gox \
 	github.com/tcnksm/ghr \
-	github.com/motemen/gobump/cmd/gobump \
-	github.com/alecthomas/gometalinter
+	github.com/motemen/gobump/cmd/gobump
 
 help: ## ドキュメントのヘルプを表示する。
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 build: $(SRCS) ## ビルド
 	go build $(LDFLAGS) -o bin/$(APPNAME) .
+
+run: build ## ビルドと実行
+	./bin/$(APPNAME)
 
 install: build ## インストール
 	go install
@@ -48,14 +49,11 @@ lint: ## 静的解析をかける
 	gometalinter
 
 test: ## テストコードを実行する
-	go test -v -cover ./...
+	go test -cover ./...
 
 clean: ## バイナリ、配布物ディレクトリを削除する
 	-rm -rf bin
 	-rm -rf $(DIST_DIR)
-
-deps: bootstrap ## 依存ライブラリを更新する
-	dep ensure
 
 bootstrap: ## 外部ツールをインストールする
 	for t in $(EXTERNAL_TOOLS); do \
@@ -64,8 +62,4 @@ bootstrap: ## 外部ツールをインストールする
 	done
 	gometalinter --install --update
 
-graph: ## グラフ画像を生成する
-	docker build ./graphviz -t graphviz
-	docker run -v `pwd`/doc:/root/doc -v `pwd`/script/generate_graph.sh:/generate_graph.sh -it graphviz /generate_graph.sh
-
-.PHONY: help build install xbuild archive release lint test clean deps bootstrap graph
+.PHONY: help build install xbuild archive release lint test clean bootstrap
